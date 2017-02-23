@@ -1,2 +1,2 @@
 # Alphaman
-Cool and Simple Backtesting Library 
+Cool and Fast Backtesting Library 
