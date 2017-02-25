@@ -20,34 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class Alphaman:
-	'''Alphaman class which manages overall the library.
+
+class Brocker:
+	'''class for asset management with cash and holdings.
 	'''
-	__broker = Broker(self)
 
-	def __init__(self, start_date, end_date):
-		self.__start_date 	= start_date
-		self.__end_date 	= end_date
-		self.__feed 		= Feed(start_date, end_date)
+	__holdings = {} 
+	'''a dictionay whose keys are instruments, values are holding amount
+	'''
 
-	def addInstrumentData(self, data):
-		pass
+	def __init__(self, alphaman):
+		self.__alphaman = alphaman
 
-	def setStrategy(self, strategy):
-		self.__strategy = strategy
-		self.__strategy.setAlphaman(self)
+	def setCash(self, cash):
+		self.__cash = cash
 
-	def setAnalysis(self, analysis):
-		self.__analysis = analysis
-		self.__analysis.setAlphaman(self)
-	
+
 	def buy(self, instrument, price, volumn):
-		self.__brocker.buy(instrument, price, volumn)
+		pass
 
 	def sell(self, instrument, price, volumn):
-		self.__brocker.sell(instrument, price, volumn)
-
-	def run(self):
 		pass
-
-

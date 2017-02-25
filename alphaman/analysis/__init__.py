@@ -20,34 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class Alphaman:
-	'''Alphaman class which manages overall the library.
-	'''
-	__broker = Broker(self)
 
-	def __init__(self, start_date, end_date):
-		self.__start_date 	= start_date
-		self.__end_date 	= end_date
-		self.__feed 		= Feed(start_date, end_date)
+class BaseAnalysis:
 
-	def addInstrumentData(self, data):
+	def __init__(self):
 		pass
 
-	def setStrategy(self, strategy):
-		self.__strategy = strategy
-		self.__strategy.setAlphaman(self)
-
-	def setAnalysis(self, analysis):
-		self.__analysis = analysis
-		self.__analysis.setAlphaman(self)
-	
-	def buy(self, instrument, price, volumn):
-		self.__brocker.buy(instrument, price, volumn)
-
-	def sell(self, instrument, price, volumn):
-		self.__brocker.sell(instrument, price, volumn)
-
-	def run(self):
+	def projectOnGraph(self, feed):
 		pass
 
-
+	def setAlphaman(self, alphaman):
+		self.__alphaman = alphaman
