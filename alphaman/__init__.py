@@ -19,16 +19,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""
 class Alphaman:
 	'''Alphaman class which manages overall the library.
 	'''
-	__broker = Broker(self)
-
 	def __init__(self, start_date, end_date):
 		self.__start_date 	= start_date
 		self.__end_date 	= end_date
 		self.__feed 		= Feed(start_date, end_date)
+		self.__broker = Broker(self)
+		self.__record = []
 
 	def addInstrumentData(self, data):
 		pass
@@ -42,12 +41,28 @@ class Alphaman:
 		self.__analysis.setAlphaman(self)
 	
 	def buy(self, instrument, price, volumn):
-		self.__brocker.buy(instrument, price, volumn)
+		self.__broker.buy(instrument, price, volumn)
+		self.__currentRecord().buy(instrument, volumn, price)
 
 	def sell(self, instrument, price, volumn):
-		self.__brocker.sell(instrument, price, volumn)
+		self.__broker.sell(instrument, price, volumn)
+		self.__currentRecord().sell(instrument, volumn, price)
+
+	def getPriceOfInstrument(self, insturment):
+		self.__feed.getPriceOfInstrument(instrument)
+
+	def __currentRecord(self):
+		return self.__record[-1]
 
 	def run(self):
-		pass
-"""
+		feed = self.__feed.getFirstDailyFeed()
+		while feed != NULL:
+			self.__record.append(Record(feed.day))
+			self.__strategy.handle_data(feed)
+			record = self.__currentRecord()
+			record.setAsset(self.__brocker.getTotalAsset())
+			record.setHoldings(self.__brocker.getHoldings())
+			feed = self.__feed.getNextDailyFeed()
 
+	def show(self):
+		self.__analysis.plot(self.__record)

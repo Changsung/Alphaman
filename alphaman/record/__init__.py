@@ -20,24 +20,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+class RecordCompany:
+	'''class for recording the holding company'''
 
-class Brocker:
-	'''class for asset management with cash and holdings.
-	'''
+	def __init__(self, instrument, volumn, price):
+		self.__insturment = instrument
+		self.__volumn = volumn
+		self.__price = price
 
-	__holdings = {} 
-	'''a dictionay whose keys are instruments, values are holding amount
-	'''
+class Record:
+	'''class for recording the assets'''
 
-	def __init__(self, alphaman):
-		self.__alphaman = alphaman
+	def __init__(self, day):
+		self.__buy = {}
+		self.__day = day
+		self.__sell = {}
 
-	def setCash(self, cash):
-		self.__cash = cash
+	def setAsset(self, asset):
+		self.__asset = asset
 
+	def getAsset(self):
+		return self.__asset
 
-	def buy(self, instrument, price, volumn):
-		pass
+	def setHoldings(self, holdings)
+		self.__holdings = holdings
 
-	def sell(self, instrument, price, volumn):
-		pass
+	def buy(self, instrument, volumn, price):
+		self.__buy[instrument] = RecordCompany(instrument, volumn, price)
+
+	def sell(self, instrument, volumn, price):
+		self.__sell[instrument] = RecordCompany(instrument, volumn, price)
+
+	def getDay(self):
+		return self.__day
+

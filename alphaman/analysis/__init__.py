@@ -19,15 +19,44 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import plotly.plotly as py
+import plotly.graph_objs as go
 
-
-class BaseAnalysis:
+class AnalysisRecord:
 
 	def __init__(self):
-		pass
+		self.__recordDict = {}
 
-	def projectOnGraph(self, feed):
-		pass
+	def setRecordData(self,day, key, value):
+		self.__recordDict[key] = value
+		self.__day = day
+
+	def getRecordDict(self):
+		return self.__recordDict
+
+	def getDay(self):
+		return self.__day
+
+class BaseAnalysis:
+	'''class for plotting the data'''
+
+	def __init__(self):
+		self.__recordData = []
+
+	def projectOnGraph(self, day):
+		self.__recordData.append(AnalysisRecord())
+
+	def record(self, day, key, value):
+		self.__recordData[-1].setRecordData(key, value)
 
 	def setAlphaman(self, alphaman):
 		self.__alphaman = alphaman
+
+	def plot(self, records):
+		x = map(lambda x: x.getDay(), records) 
+		y = map(lambda x: x.getAsset(), records) 
+		data = [go.Scatter(
+            x=x,
+            y=y)]
+
+		py.iplot(data)

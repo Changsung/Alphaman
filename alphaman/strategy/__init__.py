@@ -27,7 +27,7 @@ class BaseStrategy:
 	def __init__(self):
 		pass
 
-	def handleData(self, dailyFeed):
+	def handleData(self, feed):
 		raise Exception("must implement the function")
 
 	def setAlphaman(self, alphaman):
