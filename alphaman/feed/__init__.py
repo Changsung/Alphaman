@@ -27,23 +27,40 @@ import pandas as pd
 class DailyInstrumentData():
 	"""class for holding daily, per instrument data.
 	bar data, other daily data are stored in the class, per instrumently.
+	NOTE: bar data is mandatory.
 	"""
-	def __init__(self, instrument, bar_data, extra_data={}, technical_data={},\
-					is_tradable=False):
+	def __init__(self, instrument, bar_data, extra_data, is_tradable=False):
 		self.__instrument = instrument
 		self.__bar_data = bar_data
 		self.__extra_data = extra_data
-		self.__technical_data = technical_data
 		self.__is_tradable = is_tradable
 
 	def getInstrument(self):
 		return self.__instrument
 
+	def getIsTradable(self):
+		return self.__is_tradable
+		
+	def getBarData(self):
+		return self.__bar_data
+
 	def addExtraData(self, key, value):
 		self.__extra_data[key] = value
 
-	def addTechnicalData(self, key, value):
-		self.__technical_data[key] = value
+
+class QuarterlyInstrumentData():
+	"""class for holding quarterly, per instrument data.
+	finantial data, per instrumently
+	"""
+	def __init__(self, instrument, finance_data={}):
+		self.__instrument = instrument
+		self.__finance_data = finance_data
+		
+	def getInstrument(self):
+		return self.__instrument
+		
+	def addFinanceData(self, key, value):
+		self.__finance_data[key] = value
 
 
 class DailyFeed():
@@ -64,11 +81,31 @@ class DailyFeed():
 	def getCurDate(self):
 		return self.__cur_date
 
-	def addDailyInstrumentData(self, feed_data):
-		"""methods for adding DailyCompanyData.
-		"""
-		self.__daily_data[feed_data.getInstrument()] = feed_data
+	def getDailyInstrumentData(self, instrument):
+		return self.__daily_data[instrument]
 
+	def addDailyInstrumentData(self, daily_instrument_data):
+		"""method for adding DailyInstrumentData.
+		"""
+		self.__daily_data[daily_instrument_data.getInstrument()] = daily_instrument_data
+		if daily_instrument_data.getIsTradable():
+			self.__is_tradable = True
+
+
+class QuarterlyFeed():
+	
+	def __init__(self, cur_date=None):
+		self.__cur_date = cur_date
+		self.__quarterly_data = {}
+		
+	def getCurDate(self):
+		return self.__cur_date
+		
+	def addQuarterlyInstrumentData(self, feed_data):
+		"""method for adding QuarterlyInstrumentData.
+		"""
+		self.__quarterly_data[feed_data.getInstrument()] = feed_data
+		
 
 class Feed():
 	"""Feed class which holds every feed data.
@@ -91,8 +128,7 @@ class Feed():
 		for cur_date in (start_date + datetime.timedelta(days=n)\
 			for n in range(day_count+1)):
 			self.__daily_feeds.append(DailyFeed(cur_date))
-		
-
+			
 	def setStartDate(self, start_date):
 		if self.__end_date != None and start_date > self.__end_date:
 			raise Exception("end_date must exceed start_date")
@@ -103,16 +139,86 @@ class Feed():
 			raise Exception("end_date must exceed start_date")
 		self.__end_date = end_date
 
-	def addDailyFeed(self, feed_data, instrument):
-		"""methods for adding Daily Feed from feed_data.
-		:param feed_data: data to feed, which in form of DataFrame
-		:type feed_data: pd.DataFrame
+	def addDailyFeed(self, daily_feed, instrument):
+		"""methods for adding Daily Feed.
+		:param daily_feed: data to feed, which in form of DataFrame
+		:type daily_feed: pd.DataFrame
 
-		:param instruments: company code
-		:type instruments: str
+		:param instrument: company code
+		:type instrument: str
+		"""
+		# 1. get column names
+		BAR_IND = ["Open", "Close", "High", "Low", "Adj Close", "Volume"]
+		columns = daily_feed.columns
+		bar_columns = filter(lambda x: x in BAR_IND, columns)
+		extra_columns = filter(lambda x: x not in BAR_IND, columns)
+		
+		for index, data in daily_feed.iterrows():
+			# index type?? string or datetime?
+			index = str(index)
+			index = index.split(" ")[0]
+			year = int(index.split("-")[0])
+			month = int(index.split("-")[1])
+			day = int(index.split("-")[2])
+			cur_date = datetime.datetime(year, month, day)
+			day_count = (cur_date - self.__start_date).days
+			# get daily_feed
+			daily_feed = self.__daily_feeds[day_count]
+			# make bar_data
+			bar_data = {}
+			for column in bar_columns:
+				bar_data[column] = int(data[column])
+			# make extra_data
+			extra_data = {}
+			for column in extra_columns:
+				extra_data[column] = int(data[column])
+			# make is_tradable
+			is_tradable = True
+			if data['Volume'] == 0:
+				is_tradable = False
+			# create daily_instrument_data
+			daily_instrument_data = DailyInstrumentData(instrument, bar_data, extra_data, is_tradable)
+			# add daily_instrument_data to daily_feed
+			daily_feed.addDailyInstrumentData(daily_instrument_data)
+
+	def trimDailyFeed(self):
+		"""method for trimming untradable date
+		"""
+		self.__daily_feeds = filter(lambda x: x.getIsTradable(), self.__daily_feeds)
+
+	def getDailyFeed(self, index):
+		#day_count = (cur_date - self.__start_date).days
+		return self.__daily_feeds[index]
+	
+	def getTradableDates(self):
+		return len(self.__daily_feeds)
+	"""	
+	def getFirstDailyFeed(self):
+		for daily_feed in self.__daily_feeds:
+			if daily_feed.getIsTradable() == True:
+				self.__cur_date = daily_feed.getCurDate()
+				return daily_feed
+		raise Exception("there is no tradable date during the period")
+		
+	def getNextDailyFeed(self):
+		for daily_feed in self.__daily_feeds:
+			if daily_feed.getIsTradable() == True:
+				self.__past_feeds.append(daily_feed)
+			self.__daily_feeds.pop(daily_feed)
+		self.__past_feeds = 
+	"""
+	
+	def addQuarterlyFeed(self, quarterly_feed, instrument):
+		"""methods for adding Quarterly Feed.
+		:param quarterly_feed: data to feed, which in form of DataFrame
+		:type quarterly_feed: pd.DataFrame
+
+		:param instrument: company code
+		:type instrument: str
 		"""
 		pass
-
-	def getDailyFeed(self, cur_date):
-		day_count = (cur_date - self.__start_date).days
-		return self.__daily_feeds[day_count]
+		
+	def getQuarterlyFeed(self, cur_date):
+		"""returns closest quarter's feed
+		"""
+		
