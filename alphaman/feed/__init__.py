@@ -192,6 +192,9 @@ class Feed():
 	
 	def getTradableDates(self):
 		return len(self.__daily_feeds)
+			
+	def getPriceOfInstrument(self, instrument, today):
+		return self.__daily_feeds[today].getDailyInstrumentData(instrument).getBarData()['Close']
 	"""	
 	def getFirstDailyFeed(self):
 		for daily_feed in self.__daily_feeds:

@@ -27,14 +27,14 @@ class BaseStrategy:
 	def __init__(self):
 		pass
 
-	def handleData(self, feed):
-		raise Exception("must implement the function")
+	def handleData(self, feed, today):
+		raise NotImplementedError()
 
 	def setAlphaman(self, alphaman):
 		self.__alphaman = alphaman
 
-	def buy(self, instrument, price, volumn):
-		self.__alphaman.buy(instrument, price, volumn)
+	def buy(self, instrument, price, volume):
+		self.__alphaman.buy(instrument, price, volume)
 
-	def sell(self, instrument, price, volumn):
-		self.__alphaman.sell(instrument, price, volumn)
+	def sell(self, instrument, price, volume):
+		self.__alphaman.sell(instrument, price, volume)

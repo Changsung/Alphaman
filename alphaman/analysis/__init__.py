@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import plotly.plotly as py
-import plotly.graph_objs as go
+import matplotlib as mpl
+mpl.use("TkAgg")
+import matplotlib.pyplot as plt
+
 
 class AnalysisRecord:
 
@@ -55,8 +57,6 @@ class BaseAnalysis:
 	def plot(self, records):
 		x = map(lambda x: x.getDay(), records) 
 		y = map(lambda x: x.getAsset(), records) 
-		data = [go.Scatter(
-            x=x,
-            y=y)]
+		plt.plot(x, y)
+		plt.show()
 
-		py.iplot(data)

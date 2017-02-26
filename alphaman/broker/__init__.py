@@ -27,8 +27,8 @@ class Broker:
 
 	def __init__(self, alphaman):
 		self.__alphaman = alphaman
-		self.__cahs = 10,000,000
-		__holdings = {} 
+		self.__cash = 10000000
+		self.__holdings = {} 
 		'''a dictionay whose keys are instruments, values are holding amount
 		'''
 
@@ -38,28 +38,31 @@ class Broker:
 	def setCash(self, cash):
 		self.__cash = cash
 
-	def buy(self, instrument, price, volumn):
-		if self.__cash < price * volumn: 
-			raise Exception("not afford to buy that volumn ")
+	def buy(self, instrument, price, volume):
+		if self.__cash < price * volume: 
+			raise Exception("not afford to buy that volume ")
 			return 
-		self.__cash -= price * volumn
-		self.__holdings[instrument] += volumn
+		self.__cash -= price * volume
+		self.__buyInstrument(instrument, volume)
 
-	def sell(self, instrument, price, volumn):
-		if instrument not in self.__holdings:
-			raise Exception("%s hasn't been held", instrument)
+	def sell(self, instrument, price, volume):
+		if instrument not in self.__holdings.keys():
+			print "%s hasn't been held", instrument
 			return
-		if self.__holdings[instrument] < volumn:
-			raise Exception("%s hasn't been held that volumn", instrument)
+		if self.__holdings[instrument] < volume:
+			print "%s hasn't been held that volume", instrument
 			return
-		self.__cash += price * volumn
-		self.__holdings[instrument] -= volumn
+		self.__cash += price * volume
+		self.__sellInstrument(instrument, volume)
 
-	# def __buyInstrument(self, instrument, volumn):
-	# 	self.__holdings[instrument] += volumn
+	def __buyInstrument(self, instrument, volume):
+		if instrument not in self.__holdings.keys():
+			self.__holdings[instrument] = volume
+		else:
+			self.__holdings[instrument] += volume
 
-	# def __sellInstrument(self, instrument, volumn):
-	# 	self.__holdings[instrument] -= volumn
+	def __sellInstrument(self, instrument, volume):
+		self.__holdings[instrument] -= volume
 
 	def getVolumnOfInstrument(self, instrument):
 		if instrument not in self.__holdings:
@@ -72,8 +75,8 @@ class Broker:
 			asset += self.__getInstrumentValue(key, value)
 		return asset
 
-	def getHoldingsDict(self):
-		return __holdings
+	def getHoldings(self):
+		return self.__holdings
 
-	def __getInstrumentValue(self, instrument, volumn):
-		return self.__alphaman.getPriceOfInstrument(instrument) * volumn
+	def __getInstrumentValue(self, instrument, volume):
+		return self.__alphaman.getPriceOfInstrument(instrument) * volume

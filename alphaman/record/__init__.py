@@ -23,9 +23,9 @@
 class RecordCompany:
 	'''class for recording the holding company'''
 
-	def __init__(self, instrument, volumn, price):
+	def __init__(self, instrument, volume, price):
 		self.__insturment = instrument
-		self.__volumn = volumn
+		self.__volume = volume
 		self.__price = price
 
 class Record:
@@ -42,14 +42,17 @@ class Record:
 	def getAsset(self):
 		return self.__asset
 
-	def setHoldings(self, holdings)
-		self.__holdings = holdings
+	def setHoldings(self, holdings):
+		self.__holdings = holdings.copy()
+		
+	def getHoldings(self):
+		return self.__holdings
 
-	def buy(self, instrument, volumn, price):
-		self.__buy[instrument] = RecordCompany(instrument, volumn, price)
+	def buy(self, instrument, volume, price):
+		self.__buy[instrument] = RecordCompany(instrument, volume, price)
 
-	def sell(self, instrument, volumn, price):
-		self.__sell[instrument] = RecordCompany(instrument, volumn, price)
+	def sell(self, instrument, volume, price):
+		self.__sell[instrument] = RecordCompany(instrument, volume, price)
 
 	def getDay(self):
 		return self.__day
