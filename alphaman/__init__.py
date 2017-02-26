@@ -42,12 +42,14 @@ class Alphaman:
 		self.__analysis.setAlphaman(self)
 	
 	def buy(self, instrument, price, volumn):
-		self.__brocker.buy(instrument, price, volumn)
+		self.__broker.buy(instrument, price, volumn)
 
 	def sell(self, instrument, price, volumn):
-		self.__brocker.sell(instrument, price, volumn)
+		self.__broker.sell(instrument, price, volumn)
 
 	def run(self):
-		pass
-
-
+		feed = self.__feed.getFirstDailyFeed()
+		while feed != NULL:
+			self.__strategy.handle_data(feed)
+			feed = self.__feed.getNextDailyFeed()
+		

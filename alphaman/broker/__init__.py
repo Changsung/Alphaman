@@ -21,23 +21,43 @@
 # SOFTWARE.
 
 
-class Brocker:
+class Broker:
 	'''class for asset management with cash and holdings.
-	'''
-
-	__holdings = {} 
-	'''a dictionay whose keys are instruments, values are holding amount
 	'''
 
 	def __init__(self, alphaman):
 		self.__alphaman = alphaman
+		__holdings = {} 
+		'''a dictionay whose keys are instruments, values are holding amount
+		'''
 
 	def setCash(self, cash):
 		self.__cash = cash
 
-
 	def buy(self, instrument, price, volumn):
-		pass
+		if self.__cash < price * volumn: 
+			raise Exception("not afford to buy that volumn ")
+			return 
+		self.__cash -= price * volumn
 
 	def sell(self, instrument, price, volumn):
-		pass
+		if instrument not in self.__holdings:
+			raise Exception("%s hasn't been held", instrument)
+			return
+		if self.__holdings[instrument] < volumn:
+			raise Exception("%s hasn't been held that volumn", instrument)
+			return
+		self.__holdings[instrument] -= volumn:
+		self.__cash += price * volumn
+
+	def __buyInstrument(self, instrument, volumn):
+		self.__holdings[instrument] += volumn
+
+	def __sellInstrument(self, instrument, volumn):
+		self.__holdings[instrument] -= volumn
+
+	def getVolumnOfInstrument(self, instrument):
+		if instrument not in self.__holdings:
+			return 0
+		return self.__holdings[instrument]
+
