@@ -19,44 +19,38 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import plotly.plotly as py
-import plotly.graph_objs as go
 
-class AnalysisRecord:
+class RecordCompany:
+	'''class for recording the holding company'''
 
-	def __init__(self):
-		self.__recordDict = {}
+	def __init__(self, instrument, volumn, price):
+		self.__insturment = instrument
+		self.__volumn = volumn
+		self.__price = price
 
-	def setRecordData(self,day, key, value):
-		self.__recordDict[key] = value
+class Record:
+	'''class for recording the assets'''
+
+	def __init__(self, day):
+		self.__buy = {}
 		self.__day = day
+		self.__sell = {}
 
-	def getRecordDict(self):
-		return self.__recordDict
+	def setAsset(self, asset):
+		self.__asset = asset
+
+	def getAsset(self):
+		return self.__asset
+
+	def setHoldings(self, holdings)
+		self.__holdings = holdings
+
+	def buy(self, instrument, volumn, price):
+		self.__buy[instrument] = RecordCompany(instrument, volumn, price)
+
+	def sell(self, instrument, volumn, price):
+		self.__sell[instrument] = RecordCompany(instrument, volumn, price)
 
 	def getDay(self):
 		return self.__day
 
-class BaseAnalysis:
-	'''class for plotting the data'''
-
-	def __init__(self):
-		self.__recordData = []
-
-	def projectOnGraph(self, day):
-		self.__recordData.append(AnalysisRecord())
-
-	def record(self, day, key, value):
-		self.__recordData[-1].setRecordData(key, value)
-
-	def setAlphaman(self, alphaman):
-		self.__alphaman = alphaman
-
-	def plot(self, records):
-		x = map(lambda x: x.getDay(), records) 
-		y = map(lambda x: x.getAsset(), records) 
-		data = [go.Scatter(
-            x=x,
-            y=y)]
-
-		py.iplot(data)

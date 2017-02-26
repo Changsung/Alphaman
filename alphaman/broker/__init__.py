@@ -27,9 +27,13 @@ class Broker:
 
 	def __init__(self, alphaman):
 		self.__alphaman = alphaman
+		self.__cahs = 10,000,000
 		__holdings = {} 
 		'''a dictionay whose keys are instruments, values are holding amount
 		'''
+
+	def getCash(self, cash):
+		return self.__cash
 
 	def setCash(self, cash):
 		self.__cash = cash
@@ -39,6 +43,7 @@ class Broker:
 			raise Exception("not afford to buy that volumn ")
 			return 
 		self.__cash -= price * volumn
+		self.__holdings[instrument] += volumn
 
 	def sell(self, instrument, price, volumn):
 		if instrument not in self.__holdings:
@@ -47,17 +52,28 @@ class Broker:
 		if self.__holdings[instrument] < volumn:
 			raise Exception("%s hasn't been held that volumn", instrument)
 			return
-		self.__holdings[instrument] -= volumn:
 		self.__cash += price * volumn
-
-	def __buyInstrument(self, instrument, volumn):
-		self.__holdings[instrument] += volumn
-
-	def __sellInstrument(self, instrument, volumn):
 		self.__holdings[instrument] -= volumn
+
+	# def __buyInstrument(self, instrument, volumn):
+	# 	self.__holdings[instrument] += volumn
+
+	# def __sellInstrument(self, instrument, volumn):
+	# 	self.__holdings[instrument] -= volumn
 
 	def getVolumnOfInstrument(self, instrument):
 		if instrument not in self.__holdings:
 			return 0
 		return self.__holdings[instrument]
 
+	def getTotalAsset(self):
+		asset = self.__cash
+		for key, value in self.__holdings.items():
+			asset += self.__getInstrumentValue(key, value)
+		return asset
+
+	def getHoldingsDict(self):
+		return __holdings
+
+	def __getInstrumentValue(self, instrument, volumn):
+		return self.__alphaman.getPriceOfInstrument(instrument) * volumn
