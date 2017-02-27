@@ -14,9 +14,9 @@ class MyStrategy(BaseStrategy):
 		daily_feed = feed.getDailyFeed(today)
 		daily_data = daily_feed.getDailyInstrumentData(self.__instrument)
 		if daily_data.getBarData()['Close'] < 40000:
-			self.buy(self.__instrument, daily_data.getBarData()['Close'], 1)
+			self.buy(self.__instrument, 1)
 		elif daily_data.getBarData()['Close'] > 45000:
-			self.sell(self.__instrument, daily_data.getBarData()['Close'], 1)
+			self.sell(self.__instrument, 1)
 		
 
 start_date = datetime.datetime(2016,1,1)

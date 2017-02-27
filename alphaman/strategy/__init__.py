@@ -33,8 +33,12 @@ class BaseStrategy:
 	def setAlphaman(self, alphaman):
 		self.__alphaman = alphaman
 
-	def buy(self, instrument, price, volume):
-		self.__alphaman.buy(instrument, price, volume)
+	def buy(self, instrument, volume, limit_price = None, stop_price = None, days = None):
+		self.__alphaman.buy(instrument, volume, limit_price, stop_price, days)
 
-	def sell(self, instrument, price, volume):
-		self.__alphaman.sell(instrument, price, volume)
+	def sell(self, instrument, volume, limit_price = None, stop_price = None, days = None):
+		self.__alphaman.sell(instrument, volume, limit_price, stop_price, days)
+
+	def orderTarget(self, instrument, percentage, limit_price = None, stop_price = None, days = None):
+		self.__alphaman.orderTarget(instrument, percentage, limit_price, stop_price, days)
+

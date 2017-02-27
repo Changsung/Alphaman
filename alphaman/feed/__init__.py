@@ -192,6 +192,9 @@ class Feed():
 	
 	def getTradableDates(self):
 		return len(self.__daily_feeds)
+
+	def isEnablePriceOfInstrument(self, instrument, today_idx, price):
+		pass
 			
 	def getPriceOfInstrument(self, instrument, today):
 		return self.__daily_feeds[today].getDailyInstrumentData(instrument).getBarData()['Close']

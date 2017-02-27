@@ -34,6 +34,13 @@ class Alphaman:
 		self.__record = []
 		self.__today_idx = 0
 		self.__analysis = BaseAnalysis()
+		self.__short_selling = False
+
+	def setShortSelling(self, short_selling):
+		self.__short_selling = short_selling
+
+	def isShortSelling(self):
+		return self.__short_selling
 
 	def setFeed(self, feed):
 		self.__feed = feed
@@ -48,17 +55,31 @@ class Alphaman:
 	def setAnalysis(self, analysis):
 		self.__analysis = analysis
 		self.__analysis.setAlphaman(self)
-	
-	def buy(self, instrument, price, volumn):
-		self.__broker.buy(instrument, price, volumn)
-		self.__currentRecord().buy(instrument, volumn, price)
 
-	def sell(self, instrument, price, volumn):
-		self.__broker.sell(instrument, price, volumn)
-		self.__currentRecord().sell(instrument, volumn, price)
+	def orderTarget(self, instrument, percentage, limit_price = None, stop_price = None, days = None):
+		self.__broker.orderTargetPercent(self, instrument, percentage, limit_price, stop_price, days)
+	
+	def buy(self, instrument, volume, limit_price = None, stop_price = None, days = None):
+		self.__broker.buy(instrument, volume, limit_price, stop_price, days)
+
+	def sell(self, instrument, volume, limit_price = None, stop_price = None, days = None):
+		self.__broker.sell(instrument, volume, limit_price, stop_price, days)
+	
+	def buyCallBack(self, instrument, price, volume):
+		self.__currentRecord().buy(instrument, volume, price)
+
+	def sellCallBack(self, instrument, price, volume):
+		self.__currentRecord().sell(instrument, volume, price)
 
 	def getPriceOfInstrument(self, instrument):
 		return self.__feed.getPriceOfInstrument(instrument, self.__today_idx)
+
+	def isEnablePriceOfInstrument(self, instrument, price):
+		return True
+		#return self.__feed.isEnablePriceOfInstrument(instrument, self.__today_idx, price)
+
+	def getTodayIdx(self):
+		return self.__today_idx
 
 	def __currentRecord(self):
 		return self.__record[-1]
@@ -75,6 +96,7 @@ class Alphaman:
 			record = self.__currentRecord()
 			record.setAsset(self.__broker.getTotalAsset())
 			record.setHoldings(self.__broker.getHoldings())
+			self.__broker.operateSchedule()
 
 	def showAsset(self):
 		for item in self.__record:
