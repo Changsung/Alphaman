@@ -42,8 +42,9 @@ class Broker:
 
 	def orderTargetPercent(self, instrument, percent, limit_price = None, stop_price = None, days = None):
 		buyCash = self.getTotalAsset() * percent/100
-		volume  = Int(buyCash / limit_price)
-		currentVolume = getVolumeOfInstrument(instrument)
+		price = limit_price and limit_price or self.__alphaman.getPriceOfInstrument(instrument) 
+		volume  = int(buyCash / price)
+		currentVolume = self.getVolumeOfInstrument(instrument)
 		if currentVolume > volume :
 			self.sell(instrument, currentVolume - volume, limit_price, stop_price, days)
 		elif currentVolume < volume :

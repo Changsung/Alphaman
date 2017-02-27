@@ -57,7 +57,7 @@ class Alphaman:
 		self.__analysis.setAlphaman(self)
 
 	def orderTarget(self, instrument, percentage, limit_price = None, stop_price = None, days = None):
-		self.__broker.orderTargetPercent(self, instrument, percentage, limit_price, stop_price, days)
+		self.__broker.orderTargetPercent(instrument, percentage, limit_price, stop_price, days)
 	
 	def buy(self, instrument, volume, limit_price = None, stop_price = None, days = None):
 		self.__broker.buy(instrument, volume, limit_price, stop_price, days)
