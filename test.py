@@ -13,10 +13,13 @@ class MyStrategy(BaseStrategy):
 	def handleData(self, feed, today):
 		daily_feed = feed.getDailyFeed(today)
 		daily_data = daily_feed.getDailyInstrumentData(self.__instrument)
-		if daily_data.getBarData()['Close'] < 40000:
-			self.buy(self.__instrument, 1)
-		elif daily_data.getBarData()['Close'] > 45000:
-			self.sell(self.__instrument, 1)
+		#if daily_data.getBarData()['Close'] < 40000:
+		
+		if len(self.getSchedules()) == 0:
+			self.buy(self.__instrument, 1, 40000)
+			self.sell(self.__instrument, 1, 45000)
+			print self.getSchedules()[0].today_idx
+			
 		
 
 start_date = datetime.datetime(2016,1,1)

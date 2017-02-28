@@ -22,12 +22,12 @@
 
 class OrderSchedule:
 
-	def __init__(self, scheduleIdx, instrument, volume, order_price, todayIdx, is_buy, days = None, stop_price = None):
+	def __init__(self, scheduleIdx, instrument, volume, order_price, today_idx, is_buy, days = None, stop_price = None):
 		self.idx = scheduleIdx
 		self.instrument = instrument
 		self.volume = volume
 		self.order_price = order_price
-		self.todayIdx = todayIdx
+		self.today_idx = today_idx
 		self.is_buy = is_buy
 		self.days = days
 		self.stop_price = stop_price
@@ -57,14 +57,14 @@ class ScheduleManager:
 
 	def operateSchedule(self):
 		for scheduleItem in self.__schedules:
-			if self.__broker.isEnablePriceOfInstrument(instrument, scheduleItem.order_price):
+			if self.__broker.isEnablePriceOfInstrument(scheduleItem.instrument, scheduleItem.order_price):
 				self.__executeSchedule(scheduleItem)
 				self.__schedules.remove(scheduleItem)
 			else :
-				if self.checkExpired(schedule):
-					self.cancelSchedule(schedule)
+				if self.__isExpired(scheduleItem):
+					self.cancelSchedule(scheduleItem)
 
-	def __checkExpired(self, schedule):
+	def __isExpired(self, schedule):
 		if schedule.days != None :
 			if self.__broker.getTodayIdx() > schedule.days + schedule.todayIdx :
 				return True
@@ -80,8 +80,8 @@ class ScheduleManager:
 
 	def __executeSchedule(self, schedule):
 		if schedule.is_buy :
-			self.__broker.buyBySchedule(schedule.instrument, price, volume)
-			self.__scheduleCash -= price * volume
+			self.__broker.buyBySchedule(schedule.instrument, schedule.order_price, schedule.volume)
+			self.__scheduleCash -= schedule.order_price * schedule.volume
 		else :
-			self.__broker.sellBySchedule(schedule.instrument, price, volume)
+			self.__broker.sellBySchedule(schedule.instrument, schedule.order_price, schedule.volume)
 

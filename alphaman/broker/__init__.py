@@ -59,7 +59,7 @@ class Broker:
 
 	def __orderSchedule(self, instrument, volume, limit_price, is_buy, stop_price = None, days = None):
 		if is_buy:
-			if self.__cash < price * volume: 
+			if self.__cash < limit_price * volume: 
 				print "not afford to buy that volume"
 				return
 			else :
@@ -68,7 +68,7 @@ class Broker:
 
 	def buy(self, instrument, volume, limit_price = None, stop_price = None, days = None):
 		if limit_price != None:
-			if self.__isEnablePriceOfInstrument(instrument, limit_price) :
+			if self.isEnablePriceOfInstrument(instrument, limit_price):
 				self.__buy(instrument, limit_price, volume)
 			else :
 				self.__orderSchedule(instrument, volume, limit_price, True, stop_price, days)
@@ -77,7 +77,7 @@ class Broker:
 
 	def sell(self, instrument, volume, limit_price = None, stop_price = None, days = None):
 		if limit_price != None:
-			if self.__isEnablePriceOfInstrument(instrument, limit_price) :
+			if self.isEnablePriceOfInstrument(instrument, limit_price) :
 				self.__sell(instrument, limit_price, volume)
 			else :
 				self.__orderSchedule(instrument, volume, limit_price, False, stop_price, days)

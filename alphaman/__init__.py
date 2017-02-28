@@ -75,8 +75,10 @@ class Alphaman:
 		return self.__feed.getPriceOfInstrument(instrument, self.__today_idx)
 
 	def isEnablePriceOfInstrument(self, instrument, price):
-		return True
-		#return self.__feed.isEnablePriceOfInstrument(instrument, self.__today_idx, price)
+		return self.__feed.isEnablePriceOfInstrument(instrument, self.__today_idx, price)
+		
+	def getSchedules(self):
+		return self.__broker.getSchedules()		
 
 	def getTodayIdx(self):
 		return self.__today_idx
