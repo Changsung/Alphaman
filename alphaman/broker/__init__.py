@@ -41,14 +41,17 @@ class Broker:
 		self.__cash = cash
 
 	def orderTargetPercent(self, instrument, percent, limit_price = None, stop_price = None, days = None):
-		buyCash = self.getTotalAsset() * percent/100
-		price = limit_price and limit_price or self.__alphaman.getPriceOfInstrument(instrument) 
-		volume  = int(buyCash / price)
-		currentVolume = self.getVolumeOfInstrument(instrument)
-		if currentVolume > volume :
-			self.sell(instrument, currentVolume - volume, limit_price, stop_price, days)
-		elif currentVolume < volume :
-			self.buy(instrument, volume - currentVolume, limit_price, stop_price, days)
+		if limit_price == None or self.isEnablePriceOfInstrument(instrument, limit_price) :
+			buyCash = self.getTotalAsset() * percent/100
+			price 	= limit_price and limit_price or self.__alphaman.getPriceOfInstrument(instrument)
+			volume  = int(buyCash / price)
+			currentVolume = self.getVolumeOfInstrument(instrument)
+			if currentVolume > volume :
+				self.sell(instrument, currentVolume - volume, limit_price, stop_price, days)
+			elif currentVolume < volume :
+				self.buy(instrument, volume - currentVolume, limit_price, stop_price, days)
+		else:
+			self.__scheduleManager.addScheduleByPortion(instrument, limit_price, percent, stop_price, days)
 
 	def disaposeOfInstrument(self, instrument):
 		volume = self.getVolumeOfInstrument(instrument)
@@ -57,21 +60,21 @@ class Broker:
 		else:
 			self.buy(instrument, volume)
 
-	def __orderSchedule(self, instrument, volume, limit_price, is_buy, stop_price = None, days = None):
+	def __orderScheduleByVolume(self, instrument, volume, limit_price, is_buy, stop_price = None, days = None):
 		if is_buy:
 			if self.__cash < limit_price * volume: 
 				print "not afford to buy that volume"
 				return
 			else :
 				self.__cash -= limit_price * volume
-		self.__scheduleManager.addSchedule(instrument, volume, limit_price, is_buy, stop_price, days)
+		self.__scheduleManager.addScheduleByVolme(instrument, volume, limit_price, is_buy, stop_price, days)
 
 	def buy(self, instrument, volume, limit_price = None, stop_price = None, days = None):
 		if limit_price != None:
 			if self.isEnablePriceOfInstrument(instrument, limit_price):
 				self.__buy(instrument, limit_price, volume)
 			else :
-				self.__orderSchedule(instrument, volume, limit_price, True, stop_price, days)
+				self.__orderScheduleByVolume(instrument, volume, limit_price, True, stop_price, days)
 		else :
 			self.__buy(instrument, self.__alphaman.getPriceOfInstrument(instrument), volume)
 
@@ -80,7 +83,7 @@ class Broker:
 			if self.isEnablePriceOfInstrument(instrument, limit_price) :
 				self.__sell(instrument, limit_price, volume)
 			else :
-				self.__orderSchedule(instrument, volume, limit_price, False, stop_price, days)
+				self.__orderScheduleByVolume(instrument, volume, limit_price, False, stop_price, days)
 		else :
 			self.__sell(instrument, self.__alphaman.getPriceOfInstrument(instrument), volume)
 
@@ -126,8 +129,11 @@ class Broker:
 			return 0
 		return self.__holdings[instrument]
 
+	def getScheduleCash(self):
+		return self.__scheduleManager.getScheduleCash()
+
 	def getTotalAsset(self):
-		asset = self.__cash + self.__scheduleManager.getScheduleCash()
+		asset = self.__cash + self.getScheduleCash()
 		for key, value in self.__holdings.items():
 			asset += self.__getInstrumentValue(key, value)
 		return asset

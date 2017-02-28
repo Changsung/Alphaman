@@ -19,18 +19,39 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from enum import Enum
 
-class OrderSchedule:
+class ScheduleEnum(Enum):
+	buy_sell = 1
+	portion  = 2
 
-	def __init__(self, scheduleIdx, instrument, volume, order_price, today_idx, is_buy, days = None, stop_price = None):
-		self.idx = scheduleIdx
+class OrderSchedule(object):
+
+	def __init__(self, schedule_idx, instrument, order_price, today_idx, days = None, stop_price = None):
+		self.idx = schedule_idx
 		self.instrument = instrument
-		self.volume = volume
 		self.order_price = order_price
 		self.today_idx = today_idx
-		self.is_buy = is_buy
 		self.days = days
 		self.stop_price = stop_price
+
+	def getCategory(self):
+		return self.category
+
+class VolmeOrderSchedule(OrderSchedule):
+
+	def __init__(self, schedule_idx, instrument, volume, order_price, today_idx, is_buy, days = None, stop_price = None):
+		super(VolmeOrderSchedule, self).__init__(schedule_idx, instrument, order_price, today_idx, days, stop_price)
+		self.category = ScheduleEnum.buy_sell
+		self.volume = volume
+		self.is_buy = is_buy
+
+class PortionOrderSchedule(OrderSchedule):
+
+	def __init__(self, schedule_idx, instrument, order_price, today_idx, percent, days = None, stop_price = None):
+		super(PortionOrderSchedule, self).__init__(schedule_idx, instrument, order_price, today_idx, days, stop_price)
+		self.percent = percent
+		self.category = ScheduleEnum.portion
 
 class ScheduleManager:
 
@@ -40,20 +61,28 @@ class ScheduleManager:
 		self.__schedules = []
 		self.__scheduleCash = 0
 
-	def addSchedule(self, instrument, volume, limit_price, is_buy, stop_price = None, days = None):
+	def addScheduleByPortion(self, instrument, limit_price, percent, stop_price = None, days = None):
+		newSchedule = PortionOrderSchedule(self.__scheduleIdx, instrument, limit_price, self.__broker.getTodayIdx(), percent, stop_price, days)
+		self.__scheduleIdx += 1
+		self.__schedules.append(newSchedule)
+
+	def addScheduleByVolme(self, instrument, volume, limit_price, is_buy, stop_price = None, days = None):
 		if is_buy:
 			self.__scheduleCash += limit_price * volume
-		newSchedule = OrderSchedule(self.__scheduleIdx, instrument, volume, limit_price, self.__broker.getTodayIdx(), is_buy, stop_price, days)
+		newSchedule = VolmeOrderSchedule(self.__scheduleIdx, instrument, volume, limit_price, self.__broker.getTodayIdx(), is_buy, stop_price, days)
 		self.__scheduleIdx += 1
 		self.__schedules.append(newSchedule)
 
 	def cancelSchedule(self, schedule):
-		if schedule.is_buy:
-			self.__scheduleCash -= schedule.volume * schedule.order_price
-			self.__broker.increaseCashBySchedule(schedule.volume * schedule.order_price)
+		if schedule.getCategory == ScheduleEnum.portion :
 			self.__schedules.remove(schedule)
-		else :
-			self.__schedules.remove(schedule)
+		else:
+			if schedule.is_buy:
+				self.__scheduleCash -= schedule.volume * schedule.order_price
+				self.__broker.increaseCashBySchedule(schedule.volume * schedule.order_price)
+				self.__schedules.remove(schedule)
+			else :
+				self.__schedules.remove(schedule)
 
 	def operateSchedule(self):
 		for scheduleItem in self.__schedules:
@@ -79,9 +108,19 @@ class ScheduleManager:
 		return self.__schedules
 
 	def __executeSchedule(self, schedule):
-		if schedule.is_buy :
-			self.__broker.buyBySchedule(schedule.instrument, schedule.order_price, schedule.volume)
-			self.__scheduleCash -= schedule.order_price * schedule.volume
+		if schedule.getCategory() == ScheduleEnum.portion:
+			asset = self.__broker.getTotalAsset()
+			asset_portion = asset * schedule.percent / 100
+			holding_volme = self.__broker.getHoldings()[schedule.instrument]
+			need_holdings = int(asset_portion / schedule.order_price) - holding_volme
+			if need_holdings > 0 :
+				self.__broker.buy(schedule.instrument, need_holdings)
+			elif need_holdings < 0 :
+				self.__broker.sell(schedule.instrument, need_holdings)
 		else :
-			self.__broker.sellBySchedule(schedule.instrument, schedule.order_price, schedule.volume)
+			if schedule.is_buy :
+				self.__broker.buyBySchedule(schedule.instrument, schedule.order_price, schedule.volume)
+				self.__scheduleCash -= schedule.order_price * schedule.volume
+			else :
+				self.__broker.sellBySchedule(schedule.instrument, schedule.order_price, schedule.volume)
 
