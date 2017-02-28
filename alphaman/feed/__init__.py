@@ -194,7 +194,12 @@ class Feed():
 		return len(self.__daily_feeds)
 
 	def isEnablePriceOfInstrument(self, instrument, today_idx, price):
-		pass
+		daily_instrument_data = self.__daily_feeds[today_idx].getDailyInstrumentData(instrument)
+		high = daily_instrument_data.getBarData()['High']
+		low = daily_instrument_data.getBarData()['Low']
+		if price <= high and price >= low:
+			return True
+		return False
 			
 	def getPriceOfInstrument(self, instrument, today):
 		return self.__daily_feeds[today].getDailyInstrumentData(instrument).getBarData()['Close']
