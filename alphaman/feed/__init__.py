@@ -232,4 +232,11 @@ class Feed():
 	def getQuarterlyFeed(self, cur_date):
 		"""returns closest quarter's feed
 		"""
-		
+	
+	def getTimeSeries(self, instrument, key):
+		"""returns list of certain data
+		"""
+		time_series = []
+		for daily_feed in self.__daily_feeds:
+			time_series.append(daily_feed.getDailyInstrumentData(instrument).getBarData()[key])
+		return time_series
