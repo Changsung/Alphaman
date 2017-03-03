@@ -86,6 +86,9 @@ class Alphaman:
 	def __currentRecord(self):
 		return self.__record[-1]
 
+	def getPriceTimeDict(self, instrument):
+		return self.__feed.getTimeDict(instrument, 'Close')
+
 	def run(self):
 		#feed = self.__feed.getFirstDailyFeed()
 		feed = self.__feed
@@ -97,6 +100,7 @@ class Alphaman:
 			self.__strategy.handleData(feed, today)
 			record = self.__currentRecord()
 			record.setAsset(self.__broker.getTotalAsset())
+			record.setCash(self.__broker.getCash() + self.__broker.getScheduleCash())
 			record.setHoldings(self.__broker.getHoldings())
 			self.__broker.operateSchedule()
 

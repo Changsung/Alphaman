@@ -13,12 +13,12 @@ class MyStrategy(BaseStrategy):
 	def handleData(self, feed, today):
 		daily_feed = feed.getDailyFeed(today)
 		daily_data = daily_feed.getDailyInstrumentData(self.__instrument)
-		if daily_data.getBarData()['Close'] < 35000:
-			self.orderTarget(self.__instrument, 5)
+		if daily_data.getBarData()['Close'] < 30000:
+			self.buy(self.__instrument, 10)
 		else :
-			self.orderTarget(self.__instrument, 40, 40000)
+			self.sell(self.__instrument, 10)
 
-start_date = datetime.datetime(2016,1,1)
+start_date = datetime.datetime(2015,1,1)
 end_date = datetime.datetime(2016,12,31)
 
 
@@ -35,6 +35,7 @@ dates = feed.getTradableDates()
 
 alphaman = Alphaman(start_date, end_date)
 alphaman.setFeed(feed)
+alphaman.setShortSelling(True)
 alphaman.setStrategy(MyStrategy(instrument))
 alphaman.run()
 #alphaman.showAsset()

@@ -34,7 +34,7 @@ class Broker:
 		'''
 		self.__scheduleManager = ScheduleManager(self)
 
-	def getCash(self, cash):
+	def getCash(self):
 		return self.__cash
 
 	def setCash(self, cash):
@@ -98,9 +98,10 @@ class Broker:
 		self.__alphaman.buyCallBack(instrument, volume, price)
 
 	def __sell(self, instrument, price, volume):
-		if volume - self.getVolumeOfInstrument(instrument) > 0 & ~(self.isShortSelling()):
-			print "%s hasn't been held that volume", instrument
-			return		
+		if not self.isShortSelling():
+			if volume - self.getVolumeOfInstrument(instrument) > 0 :
+				print "%s hasn't been held that volume", instrument
+				return self.__sell(instrument, price, self.getVolumeOfInstrument(instrument))
 		self.__cash += price * volume
 		self.__sellInstrument(instrument, volume)
 		self.__alphaman.sellCallBack(instrument, volume, price)

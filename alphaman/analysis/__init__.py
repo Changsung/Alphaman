@@ -21,7 +21,7 @@
 # SOFTWARE.
 import matplotlib as mpl
 mpl.use("TkAgg")
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt, mpld3
 
 
 class AnalysisRecord:
@@ -43,6 +43,7 @@ class BaseAnalysis:
 	'''class for plotting the data'''
 
 	def __init__(self):
+		self.__numberOfRepresent = 8
 		self.__recordData = []
 
 	def projectOnGraph(self, day):
@@ -55,8 +56,52 @@ class BaseAnalysis:
 		self.__alphaman = alphaman
 
 	def plot(self, records):
+		top_instruments = self.getTopInstruments(records)
+		num_rep = min(len(top_instruments), 8)
+		fig, ax = plt.subplots(min(len(top_instruments), 8) + 1, 1, sharex="col", sharey="row", figsize=(8, 8))
 		x = map(lambda x: x.getDay(), records) 
-		y = map(lambda x: x.getAsset(), records) 
-		plt.plot(x, y)
-		plt.show()
+		y = map(lambda x: x.getAsset(), records)
+		ax[0].plot(x, y, color='green')
+		y = map(lambda x: x.getCash(), records) 
+		ax[0].plot(x, y, color='blue')
+		ax[0].set_title("Assets changes", size=20)
+		# labels = self.makeLabels(records)
+		# tooltip = mpld3.plugins.PointLabelTooltip(scatter, labels=labels) 
+		# mpld3.plugins.connect(fig, tooltip)
+		top_num = top_instruments[-num_rep:]
+		for idx, value in enumerate(top_num):
+			self.showInstruments(value[0], value[0], ax[idx+1], fig)
+		mpld3.show()
+
+	def showInstruments(self, instrument, records, ax, fig):
+		dic 	= self.__alphaman.getPriceTimeDict(instrument)
+		days 	= map(lambda x: x.keys(), dic) 
+		prices 	= map(lambda x: x.values(), dic) 
+		ax.plot(days, prices)
+		ax.set_title("Assets changes", size=20)
+
+
+	def makeLabels(self, records):
+		# labels = ['point {0}'.format(idx + 1) for idx, value in enumerate(records)]
+		# print labels
+		pass
+
+	def getTopInstruments(self, records):
+		dic = {}
+		for record in records:
+			buys = record.getBuys()
+			sells = record.getSells()
+			for key, item in buys.iteritems():
+				if key in dic:
+					dic[key] += item.volume
+				else :
+					dic[key] = item.volume
+			for key, item in sells.iteritems():
+				if key in dic:
+					dic[key] += item.volume
+				else :
+					dic[key] = item.volume
+
+		return sorted(dic.items(), key=lambda x: x[1])
+
 
