@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from alphaman.utils import tech_key
 
 class MovingWindow():
 	def __init__(self, window_size, dtype=float):
@@ -29,6 +30,7 @@ class MovingWindow():
 		#self.__values = np.zeros(window_size, dtype)
 		self.__values = []
 		#self.__value_num = 0
+		self.__mean = 0.
 
 	def getWindowSize(self):
 		return self.__window_size
@@ -36,9 +38,12 @@ class MovingWindow():
 	def addNewValue(self, value):
 		assert(value != None)
 		if self.isWindowFull():
+			# update mean
+			self.__mean -= self.__values[0] / self.__window_size
 			del self.__values[0]
 			#np.delete(self.__values, 0)
 			#self.__value_num -= 1
+		self.__mean += value / self.__window_size
 		self.__values.append(value)
 		#np.insert(self.__values, (self.__window_size-1), value)
 
@@ -47,3 +52,26 @@ class MovingWindow():
 
 	def isWindowFull(self):
 		return len(self.__values) == self.__window_size
+
+	def mean(self):
+		if self.isWindowFull():
+			return self.__mean
+		else:
+			return -1
+
+
+class Technical():
+	def __init__(self, feed):
+		self.__feed = feed
+
+	# simple moving average
+	def sma(self, instrument, key, period):
+		time_series = self.__feed.getTimeSeries(instrument, key)
+		moving_window = MovingWindow(period)
+		sma_time_series = []
+		for value in time_series:
+			moving_window.addNewValue(value)
+			sma_time_series.append(moving_window.mean())
+		# generate dictionary
+		sma_dict = {tech_key(key, period, 'sma'): sma_time_series}
+		return sma_dict

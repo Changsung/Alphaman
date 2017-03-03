@@ -261,7 +261,11 @@ class Feed():
 				time_series.append(daily_feed.getDailyInstrumentData(instrument).getExtraData(key))
 		return time_series
 		
-	def addTimeSeries(self, time_series, instrument, key):
+	def addTimeSeries(self, instrument, key, time_series):
 		for idx in range(len(self.__daily_feeds)):
 			daily_instrument_data = self.__daily_feeds[idx].getDailyInstrumentData(instrument)
 			daily_instrument_data.addExtraData(key, time_series[idx])
+
+	def addTechnicalData(self, technical_dict, instrument):
+		for key, value in technical_dict.iteritems():
+			self.addTimeSeries(instrument, key, value)

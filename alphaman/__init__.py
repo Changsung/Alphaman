@@ -43,6 +43,7 @@ class Alphaman:
 		return self.__short_selling
 
 	def setFeed(self, feed):
+		feed.trimDailyFeed()
 		self.__feed = feed
 
 	def addInstrumentData(self, data):

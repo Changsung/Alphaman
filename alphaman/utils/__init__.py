@@ -25,3 +25,6 @@ def daily(start, end):
 	
 def weekly(start, end):
 	return range(start, end+1, 7)
+
+def tech_key(data_key, period, tech_ind):
+	return str(data_key) + "-" + str(period) + "_" + str(tech_ind)
