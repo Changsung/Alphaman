@@ -110,7 +110,7 @@ class ScheduleManager:
 	def __executeSchedule(self, schedule):
 		if schedule.getCategory() == ScheduleEnum.portion:
 			asset = self.__broker.getTotalAsset()
-			asset_portion = asset * schedule.percent / 100
+			asset_portion = asset * schedule.percent
 			holding_volme = self.__broker.getHoldings()[schedule.instrument]
 			need_holdings = int(asset_portion / schedule.order_price) - holding_volme
 			if need_holdings > 0 :
