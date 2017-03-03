@@ -5,7 +5,7 @@ from alphaman.feed import DailyInstrumentData, DailyFeed, Feed
 from alphaman.strategy import BaseStrategy
 from alphaman import Alphaman
 from alphaman.technical import Technical
-from alphaman.utils import daily, tech_key
+from alphaman.utils import daily, weekly, tech_key
 
 class MyStrategy(BaseStrategy):
 	def __init__(self, instrument):
@@ -14,9 +14,10 @@ class MyStrategy(BaseStrategy):
 	def handleData(self):
 		#daily_feed = feed.getDailyFeed(today)
 		sma = self.get(self.__instrument, tech_key('Close', 60, 'sma'), daily(-2, 0))
+		stddev = self.get(self.__instrument, tech_key('Close', 60, 'stddev'), weekly(-2, 0))
 		today_price = self.get(self.__instrument, 'Close', 0)
 		yesterday_price = self.get(self.__instrument, 'Close', -1)
-		
+		print stddev
 		if today_price < 35000:
 			self.buy(self.__instrument, 10)
 		else:
@@ -38,6 +39,7 @@ feed.trimDailyFeed()
 # sma
 tech = Technical(feed)
 feed.addTechnicalData(tech.sma(instrument, 'Close', 60), instrument)
+feed.addTechnicalData(tech.stddev(instrument, 'Close', 60), instrument)
 
 alphaman = Alphaman(start_date, end_date)
 alphaman.setFeed(feed)

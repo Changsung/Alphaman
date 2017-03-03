@@ -24,7 +24,7 @@ def daily(start, end):
 	return range(start, end+1)
 	
 def weekly(start, end):
-	return range(start, end+1, 7)
+	return map(lambda x: x * 5, range(start, end+1))
 
 def tech_key(data_key, period, tech_ind):
 	return str(data_key) + "-" + str(period) + "_" + str(tech_ind)

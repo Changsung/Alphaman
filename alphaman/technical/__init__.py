@@ -19,11 +19,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+from __future__ import division
 from alphaman.utils import tech_key
+import math
 
 class MovingWindow():
-	def __init__(self, window_size, dtype=float):
+	def __init__(self, window_size):
 		assert(window_size > 0)
 		assert(isinstance(window_size, int))
 		self.__window_size = window_size
@@ -31,6 +32,7 @@ class MovingWindow():
 		self.__values = []
 		#self.__value_num = 0
 		self.__mean = 0.
+		self.__square_mean = 0.
 
 	def getWindowSize(self):
 		return self.__window_size
@@ -38,14 +40,14 @@ class MovingWindow():
 	def addNewValue(self, value):
 		assert(value != None)
 		if self.isWindowFull():
-			# update mean
+			# update mean, square mean
 			self.__mean -= self.__values[0] / self.__window_size
+			self.__square_mean -= self.__values[0] * self.__values[0] / self.__window_size
 			del self.__values[0]
-			#np.delete(self.__values, 0)
-			#self.__value_num -= 1
+		# update mean, square mean
 		self.__mean += value / self.__window_size
+		self.__square_mean += value * value / self.__window_size
 		self.__values.append(value)
-		#np.insert(self.__values, (self.__window_size-1), value)
 
 	def getValues(self):
 		return self.__values
@@ -59,6 +61,13 @@ class MovingWindow():
 		else:
 			return -1
 
+	def stddev(self):
+		if self.isWindowFull():
+			# stddev is sqrt(square_mean - mean**2)
+			return math.sqrt(self.__square_mean - self.__mean * self.__mean)
+		else:
+			return -1
+
 
 class Technical():
 	def __init__(self, feed):
@@ -68,10 +77,21 @@ class Technical():
 	def sma(self, instrument, key, period):
 		time_series = self.__feed.getTimeSeries(instrument, key)
 		moving_window = MovingWindow(period)
-		sma_time_series = []
+		tech_time_series = []
 		for value in time_series:
 			moving_window.addNewValue(value)
-			sma_time_series.append(moving_window.mean())
+			tech_time_series.append(moving_window.mean())
 		# generate dictionary
-		sma_dict = {tech_key(key, period, 'sma'): sma_time_series}
-		return sma_dict
+		tech_dict = {tech_key(key, period, 'sma'): tech_time_series}
+		return tech_dict
+
+	def stddev(self, instrument, key, period):
+		time_series = self.__feed.getTimeSeries(instrument, key)
+		moving_window = MovingWindow(period)
+		tech_time_series = []
+		for value in time_series:
+			moving_window.addNewValue(value)
+			tech_time_series.append(moving_window.stddev())
+		# generate dictionary
+		tech_dict = {tech_key(key, period, 'stddev'): tech_time_series}
+		return tech_dict
