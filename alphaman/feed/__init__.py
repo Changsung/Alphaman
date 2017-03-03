@@ -41,8 +41,11 @@ class DailyInstrumentData():
 	def getIsTradable(self):
 		return self.__is_tradable
 		
-	def getBarData(self):
-		return self.__bar_data
+	def getBarData(self, key):
+		return self.__bar_data[key]
+		
+	def getExtraData(self, key):
+		return self.__extra_data[key]
 
 	def addExtraData(self, key, value):
 		self.__extra_data[key] = value
@@ -186,23 +189,26 @@ class Feed():
 		"""
 		self.__daily_feeds = filter(lambda x: x.getIsTradable(), self.__daily_feeds)
 
-	def getDailyFeed(self, index):
+	def getDailyFeed(self, today_idx):
 		#day_count = (cur_date - self.__start_date).days
-		return self.__daily_feeds[index]
+		return self.__daily_feeds[today_idx]
+	
+	def getDailyInstrumentData(self, today_idx, instrument):
+		return self.getDailyFeed(today_idx).getDailyInstrumentData(instrument)
 	
 	def getTradableDates(self):
 		return len(self.__daily_feeds)
 
 	def isEnablePriceOfInstrument(self, instrument, today_idx, price):
 		daily_instrument_data = self.__daily_feeds[today_idx].getDailyInstrumentData(instrument)
-		high = daily_instrument_data.getBarData()['High']
-		low = daily_instrument_data.getBarData()['Low']
+		high = daily_instrument_data.getBarData('High')
+		low = daily_instrument_data.getBarData('Low')
 		if price <= high and price >= low:
 			return True
 		return False
 			
 	def getPriceOfInstrument(self, instrument, today):
-		return self.__daily_feeds[today].getDailyInstrumentData(instrument).getBarData()['Close']
+		return self.__daily_feeds[today].getDailyInstrumentData(instrument).getBarData('Close')
 	"""	
 	def getFirstDailyFeed(self):
 		for daily_feed in self.__daily_feeds:
@@ -232,11 +238,30 @@ class Feed():
 	def getQuarterlyFeed(self, cur_date):
 		"""returns closest quarter's feed
 		"""
+		pass
+		
+	def getTimeDict(self, instrument, key):
+		time_dict = {}
+		for daily_feed in self.__daily_feeds:
+			date = daily_feed.getCurDate()
+			try:
+				time_dict[date] = daily_feed.getDailyInstrumentData(instrument).getBarData(key)
+			except KeyError:
+				time_dict[date] = daily_feed.getDailyInstrumentData(instrument).getExtraData(key)
+		return time_dict
 	
 	def getTimeSeries(self, instrument, key):
 		"""returns list of certain data
 		"""
 		time_series = []
 		for daily_feed in self.__daily_feeds:
-			time_series.append(daily_feed.getDailyInstrumentData(instrument).getBarData()[key])
+			try:
+				time_series.append(daily_feed.getDailyInstrumentData(instrument).getBarData(key))
+			except KeyError:
+				time_series.append(daily_feed.getDailyInstrumentData(instrument).getExtraData(key))
 		return time_series
+		
+	def addTimeSeries(self, time_series, instrument, key):
+		for idx in range(len(self.__daily_feeds)):
+			daily_instrument_data = self.__daily_feeds[idx].getDailyInstrumentData(instrument)
+			daily_instrument_data.addExtraData(key, time_series[idx])

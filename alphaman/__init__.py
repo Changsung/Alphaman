@@ -83,6 +83,9 @@ class Alphaman:
 	def getTodayIdx(self):
 		return self.__today_idx
 
+	def getFeed(self):
+		return self.__feed
+	
 	def __currentRecord(self):
 		return self.__record[-1]
 
@@ -94,7 +97,8 @@ class Alphaman:
 			self.__today_idx = today
 			daily_feed = feed.getDailyFeed(today)
 			self.__record.append(Record(daily_feed.getCurDate()))
-			self.__strategy.handleData(feed, today)
+			#self.__strategy.handleData(feed, today)
+			self.__strategy.handleData()
 			record = self.__currentRecord()
 			record.setAsset(self.__broker.getTotalAsset())
 			record.setHoldings(self.__broker.getHoldings())

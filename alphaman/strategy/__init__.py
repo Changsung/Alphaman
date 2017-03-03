@@ -27,7 +27,7 @@ class BaseStrategy:
 	def __init__(self):
 		pass
 
-	def handleData(self, feed, today):
+	def handleData(self):
 		raise NotImplementedError()
 
 	def setAlphaman(self, alphaman):
@@ -44,3 +44,23 @@ class BaseStrategy:
 
 	def getSchedules(self):
 		return self.__alphaman.getSchedules()		
+	
+	def getFeed(self):
+		return self.__alphaman.getFeed()
+
+	def get(self, instrument, key, date_idx):
+		assert(date_idx <= 0)
+		feed = self.getFeed()
+		if isinstance(date_idx, int):
+			today_idx = self.__alphaman.getTodayIdx() + date_idx
+			# assert
+			assert(today_idx < 0)
+			try:
+				return feed.getDailyInstrumentData(today_idx, instrument).getBarData(key)
+			except KeyError:
+				return feed.getDailyInstrumentData(today_idx, instrument).getExtraData(key)
+		else if isinstance(date_idx, list):
+			today_idx = map(lambda x: x+self.__alphaman.getTodayIdx(), date_idx)
+			
+		else:
+			raise Exception('date_idx must be int or list of int')

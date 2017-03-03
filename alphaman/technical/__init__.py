@@ -20,16 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import numpy as np
-
 
 class MovingWindow():
 	def __init__(self, window_size, dtype=float):
 		assert(window_size > 0)
 		assert(isinstance(window_size, int))
 		self.__window_size = window_size
-		self.__values = np.zeros(window_size, dtype)
-		self.__value_num = 0
+		#self.__values = np.zeros(window_size, dtype)
+		self.__values = []
+		#self.__value_num = 0
 
 	def getWindowSize(self):
 		return self.__window_size
@@ -37,10 +36,11 @@ class MovingWindow():
 	def addNewValue(self, value):
 		assert(value != None)
 		if self.isWindowFull():
-			np.delete(self.__values, 0)
-			self.__value_num -= 1
+			del self.__values[0]
+			#np.delete(self.__values, 0)
+			#self.__value_num -= 1
 		self.__values.append(value)
-		self.__value_num += 1
+		#np.insert(self.__values, (self.__window_size-1), value)
 
 	def getValues(self):
 		return self.__values
