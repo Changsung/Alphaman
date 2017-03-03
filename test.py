@@ -5,6 +5,7 @@ from alphaman.feed import DailyInstrumentData, DailyFeed, Feed
 from alphaman.strategy import BaseStrategy
 from alphaman import Alphaman
 from alphaman.technical.sma import SimpleMovingAverage
+from alphaman.utils import daily, weekly
 
 class MyStrategy(BaseStrategy):
 	def __init__(self, instrument):
@@ -12,7 +13,7 @@ class MyStrategy(BaseStrategy):
 		
 	def handleData(self):
 		#daily_feed = feed.getDailyFeed(today)
-		sma = self.get(self.__instrument, 'Close_SMA', 0)
+		sma = self.get(self.__instrument, 'Close_SMA', daily(-2, 0))
 		today_price = self.get(self.__instrument, 'Close', 0)
 		yesterday_price = self.get(self.__instrument, 'Close', -1)
 		print sma, yesterday_price
