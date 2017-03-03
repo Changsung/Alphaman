@@ -49,18 +49,29 @@ class BaseStrategy:
 		return self.__alphaman.getFeed()
 
 	def get(self, instrument, key, date_idx):
-		assert(date_idx <= 0)
+		# assert to only access to previous data
 		feed = self.getFeed()
 		if isinstance(date_idx, int):
+			assert(date_idx <= 0)
 			today_idx = self.__alphaman.getTodayIdx() + date_idx
-			# assert
-			assert(today_idx < 0)
+			if today_idx < 0:
+				today_idx = 0
 			try:
 				return feed.getDailyInstrumentData(today_idx, instrument).getBarData(key)
 			except KeyError:
 				return feed.getDailyInstrumentData(today_idx, instrument).getExtraData(key)
 		elif isinstance(date_idx, list):
-			today_idx = map(lambda x: x+self.__alphaman.getTodayIdx(), date_idx)
-			
+			assert(date_idx[-1] <= 0)
+			today_idx_list = map(lambda x: x+self.__alphaman.getTodayIdx(), date_idx)
+			#today_idx_list = list(set(today_idx_list)).sort()
+			data_list = []
+			for today_idx in today_idx_list:
+				if today_idx < 0:
+					continue
+				try:
+					data_list.append(feed.getDailyInstrumentData(today_idx, instrument).getBarData(key))
+				except KeyError:
+					data_list.append(feed.getDailyInstrumentData(today_idx, instrument).getExtraData(key))
+			return data_list
 		else:
 			raise Exception('date_idx must be int or list of int')

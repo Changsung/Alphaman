@@ -19,3 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+def daily(start, end):
+	return range(start, end+1)
+	
+def weekly(start, end):
+	return range(start, end+1, 7)
