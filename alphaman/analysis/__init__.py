@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import matplotlib as mpl
+import operator
 mpl.use("TkAgg")
 import matplotlib.pyplot as plt, mpld3
 
@@ -75,11 +76,11 @@ class BaseAnalysis:
 
 	def showInstruments(self, instrument, records, ax, fig):
 		dic 	= self.__alphaman.getPriceTimeDict(instrument)
-		days 	= map(lambda x: x.keys(), dic) 
-		prices 	= map(lambda x: x.values(), dic) 
+		dic 	= sorted(dic.items(), key=operator.itemgetter(0))
+		days 	= map(lambda x:x[0], dic)
+		prices 	= map(lambda x:x[1], dic)
 		ax.plot(days, prices)
-		ax.set_title("Assets changes", size=20)
-
+		ax.set_title(instrument, size=20)
 
 	def makeLabels(self, records):
 		# labels = ['point {0}'.format(idx + 1) for idx, value in enumerate(records)]

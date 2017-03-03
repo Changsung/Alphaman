@@ -89,10 +89,10 @@ class Broker:
 
 	def __buy(self, instrument, price, volume):
 		if self.__cash < price * volume: 
-			print "not afford to buy %d shares", volume
+			#print "not afford to buy %d shares", volume
 			affordable_volme = self.__cash / price
 			volume = affordable_volme
-			print "afford to buy only %d shares", volume
+			#print "afford to buy only %d shares", volume
 		self.__cash -= price * volume
 		self.__buyInstrument(instrument, volume)
 		self.__alphaman.buyCallBack(instrument, volume, price)
