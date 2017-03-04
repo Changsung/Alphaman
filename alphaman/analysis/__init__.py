@@ -19,12 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import matplotlib as mpl
-import operator
-mpl.use("TkAgg")
-import matplotlib.pyplot as plt, mpld3
 
+import operator
 from alphaman.analysis.webapp import app
+from alphaman.analysis.DisplayData import DisplayData
+import webbrowser
 
 class AnalysisRecord:
 
@@ -58,40 +57,40 @@ class BaseAnalysis:
 	def setAlphaman(self, alphaman):
 		self.__alphaman = alphaman
 
-	def plot(self, records):
-		top_instruments = self.getTopInstruments(records)
-		num_rep = min(len(top_instruments), 8)
-		fig, ax = plt.subplots(min(len(top_instruments), 8) + 1, 1, sharex="col", sharey="row", figsize=(8, 8))
-		x = map(lambda x: x.getDay(), records)
-		y = map(lambda x: x.getAsset(), records)
-		self.__app.y = y
-		self.__app.run(host='0.0.0.0', port='8888')
-		ax[0].plot(x, y, color='green')
-		y = map(lambda x: x.getCash(), records)
-		ax[0].plot(x, y, color='blue')
-		ax[0].set_title("Assets changes", size=20)
-		# labels = self.makeLabels(records)
-		# tooltip = mpld3.plugins.PointLabelTooltip(scatter, labels=labels) 
-		# mpld3.plugins.connect(fig, tooltip)
-		top_num = top_instruments[-num_rep:]
-		for idx, value in enumerate(top_num):
-			self.showInstruments(value[0], value[0], ax[idx+1], fig)
-		#mpld3.show()
+	def makeAssetDataList(self, records):
+		result = []
+		for item in records:
+			display_data = DisplayData(item.getDay().strftime("%Y-%m-%d"), [("asset", item.getAsset()), ("cash", item.getCash())])
+			result.append(display_data)
+		return result
 
-	def showInstruments(self, instrument, records, ax, fig):
+	def makeInstrumentDataList(self, records):
+		pass
+
+	def plot(self, records):
+		# top_instruments = self.getTopInstruments(records)
+		# num_rep = min(len(top_instruments), 8)
+		# x = map(lambda x: x.getDay(), records)
+		# y_1 = map(lambda x: x.getAsset(), records)
+		# y_2 = map(lambda x: x.getCash(), records)
+		# self.__app.setAssetData(DisplayData(("days", x), [("asset", y_1), ("cash", y_2)]))
+		# top_instruments = top_instruments[-num_rep:]
+		# for instrument in top_instruments:
+		# 	self.__app.addInstrumentData(instrument, self.makeClassData(instrument, records))
+		asetDataList = self.makeAssetDataList(records)
+		self.__app.setAssetDataList(asetDataList)
+		webbrowser.open_new("http://127.0.0.1:8888/")
+		self.__app.run(host='0.0.0.0', port='8888')
+
+	def makeClassData(self, instrument, records):
 		dic 	= self.__alphaman.getPriceTimeDict(instrument)
 		dic 	= sorted(dic.items(), key=operator.itemgetter(0))
 		days 	= map(lambda x:x[0], dic)
 		prices 	= map(lambda x:x[1], dic)
-		ax.plot(days, prices)
-		ax.set_title(instrument, size=20)
-
-	def makeLabels(self, records):
-		# labels = ['point {0}'.format(idx + 1) for idx, value in enumerate(records)]
-		# print labels
-		pass
+		return DisplayData(("days", days), [("prices", prices)])
 
 	def getTopInstruments(self, records):
+		''' return instrument code list which are sorted by trading volume'''
 		dic = {}
 		for record in records:
 			buys = record.getBuys()
@@ -107,6 +106,6 @@ class BaseAnalysis:
 				else :
 					dic[key] = item.volume
 
-		return sorted(dic.items(), key=lambda x: x[1])
+		return map(lambda x: x[0] ,sorted(dic.items(), key=lambda x: x[1]))
 
 
