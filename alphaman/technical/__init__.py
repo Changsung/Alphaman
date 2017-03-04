@@ -71,6 +71,7 @@ class MovingWindow():
 
 class Technical():
 	def __init__(self, feed):
+		feed.trimDailyFeed()
 		self.__feed = feed
 
 	# simple moving average

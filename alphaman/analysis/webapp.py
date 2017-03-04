@@ -1,16 +1,12 @@
-from flask import render_template
-from flask import Flask
-
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
-__display_data = None
-
-
 @app.route("/")
 def show():
-    return render_template('show.html', name=name)
-
+	return str(app.y[0])
+    #return render_template('show.html', json=json)
+"""
 def run(display_data):
 	__display_data = display_data
 	app.run()
@@ -34,3 +30,4 @@ class InstrumentData:
 		self.__instrument = instrument
 		self.prices = prices
 		self.holdings_info = holdings_info
+"""

@@ -24,6 +24,7 @@ import operator
 mpl.use("TkAgg")
 import matplotlib.pyplot as plt, mpld3
 
+from alphaman.analysis.webapp import app
 
 class AnalysisRecord:
 
@@ -46,6 +47,7 @@ class BaseAnalysis:
 	def __init__(self):
 		self.__numberOfRepresent = 8
 		self.__recordData = []
+		self.__app = app
 
 	def projectOnGraph(self, day):
 		self.__recordData.append(AnalysisRecord())
@@ -60,10 +62,12 @@ class BaseAnalysis:
 		top_instruments = self.getTopInstruments(records)
 		num_rep = min(len(top_instruments), 8)
 		fig, ax = plt.subplots(min(len(top_instruments), 8) + 1, 1, sharex="col", sharey="row", figsize=(8, 8))
-		x = map(lambda x: x.getDay(), records) 
+		x = map(lambda x: x.getDay(), records)
 		y = map(lambda x: x.getAsset(), records)
+		self.__app.y = y
+		self.__app.run(host='0.0.0.0', port='8888')
 		ax[0].plot(x, y, color='green')
-		y = map(lambda x: x.getCash(), records) 
+		y = map(lambda x: x.getCash(), records)
 		ax[0].plot(x, y, color='blue')
 		ax[0].set_title("Assets changes", size=20)
 		# labels = self.makeLabels(records)
@@ -72,7 +76,7 @@ class BaseAnalysis:
 		top_num = top_instruments[-num_rep:]
 		for idx, value in enumerate(top_num):
 			self.showInstruments(value[0], value[0], ax[idx+1], fig)
-		mpld3.show()
+		#mpld3.show()
 
 	def showInstruments(self, instrument, records, ax, fig):
 		dic 	= self.__alphaman.getPriceTimeDict(instrument)

@@ -7,6 +7,7 @@ from alphaman import Alphaman
 from alphaman.technical import Technical
 from alphaman.utils import daily, weekly, tech_key
 
+
 class MyStrategy(BaseStrategy):
 	def __init__(self, instrument):
 		self.__instrument = instrument
@@ -35,7 +36,7 @@ df = web.DataReader(instrument+".KS", "yahoo", start_date, end_date)
 feed = Feed(start_date, end_date)
 
 feed.addDailyFeed(df, instrument)
-feed.trimDailyFeed()
+
 # sma
 tech = Technical(feed)
 feed.addTechnicalData(tech.sma(instrument, 'Close', 60), instrument)
