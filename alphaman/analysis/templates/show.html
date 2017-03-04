@@ -27,40 +27,43 @@ var x = d3.scaleTime()
 var y = d3.scaleLinear()
     .rangeRound([height, 0]);
 
-var line = d3.line()
+var area1 = d3.area()
     .x(function(d) { return x(d.x); })
-    .y(function(d) { return y(d.asset); });
+    .y1(function(d) { return y(d.asset); });
 
+var area2 = d3.area()
+    .x(function(d) { return x(d.x); })
+    .y1(function(d) { return y(d.cash); });
 
+x.domain(d3.extent(asset, function(d) { return d.x; }));
+y.domain([0, d3.max(asset, function(d) { return d.asset; })]);
+area1.y0(y(0));
+area2.y0(y(0));
 
-x.domain(d3.extent(asset, function(d) { 
-  return d.x; }));
-y.domain(d3.extent(asset, function(d) { return d.asset; }));
+g.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x))
+  .select(".domain")
+    .remove();
 
-  g.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x))
-    .select(".domain")
-      .remove();
+g.append("g")
+    .call(d3.axisLeft(y))
+  .append("text")
+    .attr("fill", "#000")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 10)
+    .attr("text-anchor", "end")
+    .text("Asset (₩)");
 
-  g.append("g")
-      .call(d3.axisLeft(y))
-    .append("text")
-      .attr("fill", "#000")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 10)
-      .attr("text-anchor", "end")
-      .text("Asset (₩)");
-  
- g.append("path")
-      .datum(asset)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("stroke-width", 1.5)
-      .attr("d", line);
+g.append("path")
+    .datum(asset)
+    .attr("fill", "steelblue")
+    .attr("d", area1);
 
+g.append("path")
+    .datum(asset)
+    .attr("fill", "#ff9900")
+    .attr("d", area2);
 		</script>
 	</div>
 </div>	

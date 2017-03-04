@@ -18,9 +18,9 @@ class MyStrategy(BaseStrategy):
 		today_price = self.get(self.__instrument, 'Close', 0)
 		yesterday_price = self.get(self.__instrument, 'Close', -1)
 		if today_price < 35000:
-			self.buy(self.__instrument, 10)
+			self.orderTarget(self.__instrument, 0.8)
 		else:
-			self.sell(self.__instrument, 10)
+			self.orderTarget(self.__instrument, 0.2)
 
 start_date 	= datetime.datetime(2006,1,1)
 end_date	= datetime.datetime(2016,12,31)
