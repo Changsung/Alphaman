@@ -24,7 +24,6 @@ class MyStrategy(BaseStrategy):
 		else:
 			self.sell(self.__instrument, 10)
 		
-			
 
 start_date = datetime.datetime(2016,1,1)
 end_date = datetime.datetime(2016,12,31)

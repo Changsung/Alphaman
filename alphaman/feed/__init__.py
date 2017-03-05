@@ -23,6 +23,8 @@
 import datetime
 import pandas as pd
 
+from alphaman.utils import calculate_quarter_count, get_closest_quarter, quarterify
+
 
 class DailyInstrumentData():
 	"""class for holding daily, per instrument data.
@@ -104,10 +106,10 @@ class QuarterlyFeed():
 	def getCurDate(self):
 		return self.__cur_date
 		
-	def addQuarterlyInstrumentData(self, feed_data):
+	def addQuarterlyInstrumentData(self, quarterly_instrument_data):
 		"""method for adding QuarterlyInstrumentData.
 		"""
-		self.__quarterly_data[feed_data.getInstrument()] = feed_data
+		self.__quarterly_data[feed_data.getInstrument()] = quarterly_instrument_data
 		
 
 class Feed():
@@ -131,6 +133,17 @@ class Feed():
 		for cur_date in (start_date + datetime.timedelta(days=n)\
 			for n in range(day_count+1)):
 			self.__daily_feeds.append(DailyFeed(cur_date))
+
+		# make list for quarterly feeds
+		self.__quarterly_feeds = []
+		quarter_count = calculate_quarter_count(start_date, end_date)
+		year, quarter_num = get_closest_quarter(start_date, False)
+		for _ in range(quarter_count):
+			self.__quarterly_feeds.append(QuarterlyFeed(quarterify(year, quarter_num)))
+			quarter_num += 1
+			if quarter_num == 5:
+				year += 1
+				quarter_num -= 4
 			
 	def setStartDate(self, start_date):
 		if self.__end_date != None and start_date > self.__end_date:
@@ -233,13 +246,36 @@ class Feed():
 		:param instrument: company code
 		:type instrument: str
 		"""
-		pass
-		
+		for index, data in quarterly_feed.iterrows():
+			# get datetime from index
+			index = str(index)
+			index = index.split(" ")[0]
+			year = int(index.split("-")[0])
+			month = int(index.split("-")[1])
+			day = int(index.split("-")[2])
+			cur_date = datetime.datetime(year, month, day)
+			# make QuarterlyInstrumentData
+			finance_data = {}
+			for column in quarterly_feed.columns:
+				finance_data[column] = int(data[column])
+			quarterly_instrument_data = QuarterlyInstrumentData(instrument, finance_data)
+			self.__quarterly_feeds.append(quarterly_instrument_data)
+	
+	def getQuarterlyFeeds(self):
+		return self.__quarterly_feeds
+
 	def getQuarterlyFeed(self, cur_date):
 		"""returns closest quarter's feed
 		"""
-		pass
-		
+		cur_year, cur_quarter_num = get_closest_quarter(cur_date)
+		start_year, start_quarter_num = get_closest_quarter(self.__start_date, False)
+
+		idx = (cur_year-start_year) * 4 - start_quarter_num + cur_quarter_num
+		if idx < 0:
+			return None
+		else:
+			return self.__quarterly_feeds[idx]
+
 	def getTimeDict(self, instrument, key):
 		time_dict = {}
 		for daily_feed in self.__daily_feeds:
