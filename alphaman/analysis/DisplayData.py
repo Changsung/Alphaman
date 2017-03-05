@@ -20,33 +20,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from flask import Flask, render_template
+class DisplayData:
 
-class WebApp(Flask):
+	def __init__(self, x, y):
+		''' x is a value which represents x-axis (datetime)
+			y is a list of tuples which corresponds to x
+			ex) [('price', 40000), ('sma', 42000)]
+		'''
+		self.__x = x
+		self.__y = y
 
-	__instrumentDatas = []
-	''' __instrumentDatas is a list of tuples which holds instruments data
-		In the tuple:
-			first item is instrument
-			second item is a list of bar data
-			third item is a list of trade data
-	'''
+	def getX(self):
+		return self.__x
 
-	def setAssetDataList(self, asset_data_list):
-		self.__assetDataList = asset_data_list
+	def getY(self):
+		return self.__y
 
-	def getAssetDataDict(self):
-		return map(lambda x: x.toDict(), self.__assetDataList)
-
-	def addInstrumentData(self, instrument, bar_data, trade_data):
-		self.__instrumentDatas.append((instrument, bar_data, trade_data))
-
-	def getInstrumentDatas(self):
-		return self.__instrumentDatas
-
-app = WebApp(__name__)
-
-@app.route("/")
-def show():
-	return render_template('show.html', asset=app.getAssetDataDict())
-
+	def toDict(self):
+		dic = {}
+		dic['x'] = self.getX()
+		for y in self.getY():
+			dic[y[0]] = y[1]
+		return dic

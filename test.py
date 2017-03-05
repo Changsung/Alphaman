@@ -7,7 +7,6 @@ from alphaman import Alphaman
 from alphaman.technical import Technical
 from alphaman.utils import daily, weekly, tech_key
 
-
 class MyStrategy(BaseStrategy):
 	def __init__(self, instrument):
 		self.__instrument = instrument
@@ -18,15 +17,13 @@ class MyStrategy(BaseStrategy):
 		stddev = self.get(self.__instrument, tech_key('Close', 60, 'stddev'), weekly(-2, 0))
 		today_price = self.get(self.__instrument, 'Close', 0)
 		yesterday_price = self.get(self.__instrument, 'Close', -1)
-		print stddev
 		if today_price < 35000:
-			self.buy(self.__instrument, 10)
+			self.orderTarget(self.__instrument, 0.8)
 		else:
-			self.sell(self.__instrument, 10)
-		
+			self.orderTarget(self.__instrument, 0.2)
 
-start_date = datetime.datetime(2016,1,1)
-end_date = datetime.datetime(2016,12,31)
+start_date 	= datetime.datetime(2006,1,1)
+end_date	= datetime.datetime(2016,12,31)
 
 instrument = "000660"
 
