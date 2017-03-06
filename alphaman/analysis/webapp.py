@@ -38,7 +38,7 @@ class WebApp(Flask):
 	def getAssetDataDict(self):
 		return map(lambda x: x.toDict(), self.__assetDataList)
 
-	def addInstrumentData(self, instrument, bar_data, trade_data):
+	def addInstrumentData(self, instrument, bar_data, trade_data=None):
 		self.__instrumentDatas.append((instrument, bar_data, trade_data))
 
 	def getInstrumentDatas(self):
@@ -48,5 +48,4 @@ app = WebApp(__name__)
 
 @app.route("/")
 def show():
-	return render_template('show.html', asset=app.getAssetDataDict())
-
+	return render_template('show.html', asset=app.getAssetDataDict(), instrument=app.getInstrumentDatas())

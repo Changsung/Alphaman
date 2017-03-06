@@ -64,21 +64,31 @@ class BaseAnalysis:
 			result.append(display_data)
 		return result
 
-	def makeInstrumentDataList(self, records):
-		pass
+	def makeInstrumentDataList(self, instrument, records):
+		result = []
+		bar_data = self.__alphaman.getPriceTimeDict(instrument)
+		for key, value in bar_data.iteritems():
+			display_data = DisplayData(key.strftime("%Y-%m-%d"), [("price", value)])
+			result.append(display_data)
+		return result
+
 
 	def plot(self, records):
-		# top_instruments = self.getTopInstruments(records)
-		# num_rep = min(len(top_instruments), 8)
 		# x = map(lambda x: x.getDay(), records)
 		# y_1 = map(lambda x: x.getAsset(), records)
 		# y_2 = map(lambda x: x.getCash(), records)
 		# self.__app.setAssetData(DisplayData(("days", x), [("asset", y_1), ("cash", y_2)]))
-		# top_instruments = top_instruments[-num_rep:]
-		# for instrument in top_instruments:
-		# 	self.__app.addInstrumentData(instrument, self.makeClassData(instrument, records))
-		asetDataList = self.makeAssetDataList(records)
-		self.__app.setAssetDataList(asetDataList)
+		
+		# make instrument data & add
+		top_instruments = self.getTopInstruments(records)
+		num_rep = min(len(top_instruments), 8)
+		top_instruments = top_instruments[-num_rep:]
+		for instrument in top_instruments:
+		 	self.__app.addInstrumentData(instrument, self.makeInstrumentDataList(instrument, records))
+		# make asset data
+		assetDataList = self.makeAssetDataList(records)
+		self.__app.setAssetDataList(assetDataList)
+		
 		webbrowser.open_new("http://127.0.0.1:8888/")
 		self.__app.run(host='0.0.0.0', port='8888')
 
