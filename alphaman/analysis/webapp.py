@@ -42,7 +42,7 @@ class WebApp(Flask):
 		self.__instrumentDatas.append((instrument, bar_data, trade_data))
 
 	def getInstrumentDatas(self):
-		return self.__instrumentDatas
+		return map(lambda x: {"instrument":x[0], "bar_data":map(lambda y:y.toDict(), x[1])}, self.__instrumentDatas)
 
 app = WebApp(__name__)
 
