@@ -83,14 +83,25 @@ class BaseAnalysis:
 		for record in records:
 			buys = record.getBuys()
 			sells = record.getSells()
-			buy = None
-			sell = None
+			buy = {}
+			sell = {}
+			if buys.has_key(instrument):
+				buy['volume'] = buys[instrument].volume
+				buy['price']  = buys[instrument].price
+				result.append(DisplayData(record.getDay().strftime("%Y-%m-%d"), [('buy', buy)]))
+			if sells.has_key(instrument):
+				sell['volume'] = sells[instrument].volume
+				sell['price']  = sells[instrument].price
+				result.append(DisplayData(record.getDay().strftime("%Y-%m-%d"), [('sell', sell)]))
+			'''
 			if instrument in buys.keys():
 				buy = {"volume":buys[instrument].volume, "price":buys[instrument].price}
 			if instrument in sells.keys():
 				sell = {"volume":sells[instrument].volume, "price":sells[instrument].price}
+			
 			if buy is not None or sell is not None:
 				result.append(DisplayData(record.getDay(), [("buy", buy), ("sell", sell)]))
+			'''
 		return result
 
 

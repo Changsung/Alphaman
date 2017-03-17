@@ -24,7 +24,7 @@ class RecordCompany:
 	'''class for recording the holding company'''
 
 	def __init__(self, instrument, volume, price):
-		self.insturment = instrument
+		self.instrument = instrument
 		self.volume = volume
 		self.price = price
 
