@@ -275,7 +275,7 @@ class Feed():
 			return None
 		else:
 			return self.__quarterly_feeds[idx]
-
+	'''
 	def getTimeDict(self, instrument, key):
 		time_dict = {}
 		for daily_feed in self.__daily_feeds:
@@ -285,7 +285,7 @@ class Feed():
 			except KeyError:
 				time_dict[date] = daily_feed.getDailyInstrumentData(instrument).getExtraData(key)
 		return time_dict
-	
+	'''
 	def getTimeDict(self, instrument, key):
 		time_series = []
 		for daily_feed in self.__daily_feeds:
@@ -294,6 +294,7 @@ class Feed():
 			except KeyError:
 				time_series.append((daily_feed.getCurDate(), daily_feed.getDailyInstrumentData(instrument).getExtraData(key)))
 		return time_series
+	
 
 	def getTimeSeries(self, instrument, key):
 		"""returns list of certain data

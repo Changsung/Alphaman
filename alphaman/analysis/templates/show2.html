@@ -1,0 +1,32 @@
+<!doctype html>
+<title>Result</title>
+<head>
+    <script src="{{ url_for('static', filename='plotly-latest.min.js') }}"></script>
+</head>
+<body>
+    <div class=page>
+    	<h1>Asset Changes</h1>
+    	<div id="asset_graph" style="width: 960px; height: 400px;"></div>
+        <script type="text/javascript">
+            var broker = {{asset|tojson|safe}};
+            var asset = new Object();
+            var cash  = new Object();
+            asset.x = broker.x;
+            asset.y = broker.asset;
+            cash.x  = broker.x;
+            cash.y  = broker.cash;
+            asset.type = 'scatter';
+            cash.type  = 'scatter';
+            Plotly.plot('asset_graph', [asset, cash]);
+        </script>
+        <div id="instrument_graph" style="width: 480px; height: 400px;"></div>
+        <script type="text/javascript">
+            var instrument = {{instrument|tojson|safe}};
+            var bar = new Object();
+            bar.x = instrument.bar_data.x;
+            bar.y = instrument.bar_data.price;
+            bar.type = 'scatter';
+            Plotly.plot('instrument_graph', [bar]);
+        </script>
+    </div>
+</body>	

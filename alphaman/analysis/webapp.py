@@ -23,29 +23,43 @@
 from flask import Flask, render_template
 
 class WebApp(Flask):
-
-	__instrumentDatas = []
-	''' __instrumentDatas is a list of tuples which holds instruments data
+	
+	''' __instrument_datas is a list of tuples which holds instruments data
 		In the tuple:
 			first item is instrument
 			second item is a list of bar data
 			third item is a list of trade data
 	'''
+	__instrument_datas = []
 
 	def setAssetDataList(self, asset_data_list):
-		self.__assetDataList = asset_data_list
+		self.__asset_data_list = asset_data_list
 
 	def getAssetDataDict(self):
-		return map(lambda x: x.toDict(), self.__assetDataList)
+		keys = self.__asset_data_list[0].toDict().keys()
+		asset_dict = {}
+		for key in keys:
+			asset_dict[key] = map(lambda x: x.toDict()[key], self.__asset_data_list)
+		return asset_dict
+		#return map(lambda x: x.toDict(), self.__asset_data_list)
 
 	def addInstrumentData(self, instrument, bar_data, trade_data):
-		self.__instrumentDatas.append((instrument, bar_data, trade_data))
+		self.__instrument_datas.append((instrument, bar_data, trade_data))
 
 	def getInstrumentDatas(self):
-		return map(lambda x: {"instrument":x[0], "bar_data":map(lambda y:y.toDict(), x[1]), "trade_data":map(lambda y:y.toDict(), x[2])}, self.__instrumentDatas)
+		instrument_list = []
+		for instrument_data in self.__instrument_datas:
+			instrument_dict = {}
+			instrument_dict['instrument'] = instrument_data[0]
+
+			instrument_dict['bar_data']   = {'x': map(lambda x: x.toDict()['x'], instrument_data[1]), 'price': map(lambda x: x.toDict()['price'], instrument_data[1])}
+			instrument_list.append(instrument_dict)
+		return instrument_dict
+		#return map(lambda x: {"instrument":x[0], "bar_data":map(lambda y:y.toDict(), x[1]), "trade_data":map(lambda y:y.toDict(), x[2])}, self.__instrument_datas)
 
 app = WebApp(__name__)
 
 @app.route("/")
 def show():
-	return render_template('show.html', asset=app.getAssetDataDict(), instrument=app.getInstrumentDatas())
+	#return render_template('show2.html', asset=app.getAssetDataDict(), instrument=app.getInstrumentDatas())
+	return render_template('show2.html', asset=app.getAssetDataDict(), instrument=app.getInstrumentDatas())
