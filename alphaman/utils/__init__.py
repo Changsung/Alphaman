@@ -66,9 +66,9 @@ def quarterify(year, quarter_num):
 	assert(quarter_num in [1, 2, 3, 4])
 	if quarter_num == 1:
 		return datetime(year, 5, 1)
-	elif quarter_num = 2:
+	elif quarter_num == 2:
 		return datetime(year, 8, 1)
-	elif quarter_num = 3:
+	elif quarter_num == 3:
 		return datetime(year, 11, 1)
 	else:
 		return datetime(year+1, 4, 1)
