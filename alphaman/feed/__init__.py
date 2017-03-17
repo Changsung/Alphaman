@@ -286,6 +286,15 @@ class Feed():
 				time_dict[date] = daily_feed.getDailyInstrumentData(instrument).getExtraData(key)
 		return time_dict
 	
+	def getTimeDict(self, instrument, key):
+		time_series = []
+		for daily_feed in self.__daily_feeds:
+			try:
+				time_series.append((daily_feed.getCurDate(), daily_feed.getDailyInstrumentData(instrument).getBarData(key)))
+			except KeyError:
+				time_series.append((daily_feed.getCurDate(), daily_feed.getDailyInstrumentData(instrument).getExtraData(key)))
+		return time_series
+
 	def getTimeSeries(self, instrument, key):
 		"""returns list of certain data
 		"""

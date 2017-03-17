@@ -67,10 +67,16 @@ class BaseAnalysis:
 	def makeBarDataList(self, instrument):
 		result = []
 		bar_data = self.__alphaman.getPriceTimeDict(instrument)
+		for data in bar_data:
+			display_data = DisplayData(data[0].strftime("%Y-%m-%d"), [("price", data[1])])
+			result.append(display_data)
+		return result
+		'''
 		for key, value in bar_data.iteritems():
 			display_data = DisplayData(key.strftime("%Y-%m-%d"), [("price", value)])
 			result.append(display_data)
 		return result
+		'''
 
 	def makeTradeDataList(self, instrument, records):
 		return None

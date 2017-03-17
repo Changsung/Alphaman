@@ -3,8 +3,8 @@
 <div class=page>
 	<h1>Asset Changes</h1>
 	<div> 
-        <!--make svgs-->
-		<svg id="asset" width="960" height="300"></svg>
+        <!--make svg_1s-->
+        <svg id="asset" width="960" height="300"></svg>
         
         <svg id="instrument_1" width="480" height="300"></svg>
         <svg id="instrument_2" width="480" height="300"></svg>
@@ -15,7 +15,7 @@
         <svg id="instrument_7" width="480" height="300"></svg>
         <svg id="instrument_8" width="480" height="300"></svg>
 
-		<script src="{{url_for('static', filename='d3js_4.7.3.js')}}"></script>
+        <script src="{{url_for('static', filename='d3js_4.7.3.js')}}"></script>
         <!--codes for asset graph-->
         <script type="text/javascript">
             var parseTime = d3.timeParse("%Y-%m-%d");
@@ -27,24 +27,24 @@
             })
 
             var svg = d3.select("#asset"),
-                margin = {top: 20, right: 20, bottom: 100, left: 100},
-                width = +svg.attr("width") - margin.left - margin.right,
-                height = +svg.attr("height") - margin.top - margin.bottom,
-                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            margin = {top: 20, right: 20, bottom: 100, left: 100},
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom,
+            g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             var x = d3.scaleTime()
-                .rangeRound([0, width]);
+            .rangeRound([0, width]);
 
             var y = d3.scaleLinear()
-                .rangeRound([height, 0]);
+            .rangeRound([height, 0]);
 
             var area1 = d3.area()
-                .x(function(d) { return x(d.x); })
-                .y1(function(d) { return y(d.asset); });
+            .x(function(d) { return x(d.x); })
+            .y1(function(d) { return y(d.asset); });
 
             var area2 = d3.area()
-                .x(function(d) { return x(d.x); })
-                .y1(function(d) { return y(d.cash); });
+            .x(function(d) { return x(d.x); })
+            .y1(function(d) { return y(d.cash); });
 
             x.domain(d3.extent(asset, function(d) { return d.x; }));
             y.domain([0, d3.max(asset, function(d) { return d.asset; })]);
@@ -52,47 +52,86 @@
             area2.y0(y(0));
 
             g.append("g")
-                .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x))
-              .select(".domain")
-                .remove();
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
+            .select(".domain")
+            .remove();
 
             g.append("g")
-                .call(d3.axisLeft(y))
-              .append("text")
-                .attr("fill", "#000")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 10)
-                .attr("text-anchor", "end")
-                .text("Asset (₩)");
+            .call(d3.axisLeft(y))
+            .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 10)
+            .attr("text-anchor", "end")
+            .text("Asset (₩)");
 
             g.append("path")
-                .datum(asset)
-                .attr("fill", "steelblue")
-                .attr("d", area1);
+            .datum(asset)
+            .attr("fill", "steelblue")
+            .attr("d", area1);
 
             g.append("path")
-                .datum(asset)
-                .attr("fill", "#ff9900")
-                .attr("d", area2);
-		</script>
+            .datum(asset)
+            .attr("fill", "#ff9900")
+            .attr("d", area2);
+        </script>
         <!--codes for instruments grpahs-->
         <script type="text/javascript">
             var parseTime = d3.timeParse("%Y-%m-%d");
 
-            var instrument = {{instrument|tojson|safe}}
-            console.log(instrument)
+            var instruments_data = {{instrument|tojson|safe}}
+            var instrument_1 = instruments_data[0]
 
+            var datas = instrument_1.bar_data.map(function(elem) {
+                elem.x = parseTime(elem.x)
+                elem.price = +elem.price
+                return elem;
+            })
+            console.log(datas)
+            
             var svg = d3.select("#instrument_1"),
-                margin = {top: 10, right: 10, bottom: 50, left: 50},
-                width = +svg.attr("width") - margin.left - margin.right,
-                height = +svg.attr("height") - margin.top - margin.bottom,
-                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            margin = {top: 10, right: 10, bottom: 50, left: 50},
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom,
+            g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             var x = d3.scaleTime()
-                .rangeRound([0, width]);
+            .rangeRound([0, width]);
 
             var y = d3.scaleLinear()
-                .rangeRound([height, 0]);
-	</div>
+            .rangeRound([height, 0]);
+
+            var line = d3.line()
+                .x(function(d) { return x(d.x); })
+                .y(function(d) { return y(d.price); });
+            
+            x.domain(d3.extent(datas, function(d) { return d.x; }));
+            y.domain(d3.extent(datas, function(d) { return d.price; }));
+
+            g.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
+            .select(".domain")
+            .remove();
+
+            g.append("g")
+            .call(d3.axisLeft(y))
+            .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 10)
+            .attr("text-anchor", "end")
+            .text("Price (₩)");
+
+            g.append("path")
+            .datum(datas)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-width", 1.5)
+            .attr("d", line);
+        </script>
+    </div>
 </div>	
