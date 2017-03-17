@@ -4,13 +4,13 @@
 	<h1>Asset Changes</h1>
 	<div> 
 		<svg id="asset" width="960" height="300"></svg>
-		<script src="https://d3js.org/d3.v4.min.js"></script>
-		<script type="text/javascript">
+		<script src="{{url_for('static', filename='d3js_4.7.3.js')}}"></script>
+        <script type="text/javascript">
 
 var parseTime = d3.timeParse("%Y-%m-%d");
 
-var instrument = {{instrument|tojson|safe}}
-console.log(instrument)
+//var instrument = {{instrument|safe}}
+//console.log(instrument)
 
 var asset = {{asset|tojson|safe}}
 asset = asset.map(function(elem) {
