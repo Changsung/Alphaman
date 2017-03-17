@@ -79,7 +79,21 @@ class BaseAnalysis:
 		'''
 
 	def makeTradeDataList(self, instrument, records):
-		return None
+		result = []
+		for record in records:
+			buys = record.getBuys()
+			sells = record.getSells()
+			buy = None
+			sell = None
+			if instrument in buys.keys():
+				buy = {"volume":buys[instrument].volume, "price":buys[instrument].price}
+			if instrument in sells.keys():
+				sell = {"volume":sells[instrument].volume, "price":sells[instrument].price}
+			if buy is not None or sell is not None:
+				result.append(DisplayData(record.getDay(), [("buy", buy), ("sell", sell)]))
+		return result
+
+
 
 	def plot(self, records):
 		# x = map(lambda x: x.getDay(), records)

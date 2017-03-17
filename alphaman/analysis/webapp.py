@@ -38,11 +38,11 @@ class WebApp(Flask):
 	def getAssetDataDict(self):
 		return map(lambda x: x.toDict(), self.__assetDataList)
 
-	def addInstrumentData(self, instrument, bar_data, trade_data=None):
+	def addInstrumentData(self, instrument, bar_data, trade_data):
 		self.__instrumentDatas.append((instrument, bar_data, trade_data))
 
 	def getInstrumentDatas(self):
-		return map(lambda x: {"instrument":x[0], "bar_data":map(lambda y:y.toDict(), x[1])}, self.__instrumentDatas)
+		return map(lambda x: {"instrument":x[0], "bar_data":map(lambda y:y.toDict(), x[1]), "trade_data":map(lambda y:y.toDict(), x[2])}, self.__instrumentDatas)
 
 app = WebApp(__name__)
 
