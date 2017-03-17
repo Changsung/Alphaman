@@ -9,8 +9,8 @@
 
 var parseTime = d3.timeParse("%Y-%m-%d");
 
-//var instrument = {{instrument|safe}}
-//console.log(instrument)
+var instrument = {{instrument|tojson|safe}}
+console.log(instrument)
 
 var asset = {{asset|tojson|safe}}
 asset = asset.map(function(elem) {
