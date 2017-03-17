@@ -110,9 +110,7 @@ class BaseAnalysis:
 		# make asset data
 		assetDataList = self.makeAssetDataList(records)
 		self.__app.setAssetDataList(assetDataList)
-		
-		webbrowser.open_new("http://127.0.0.1:8888/")
-		self.__app.run(host='0.0.0.0', port='8888')
+		self.__app.execute()
 
 	def makeClassData(self, instrument, records):
 		dic 	= self.__alphaman.getPriceTimeDict(instrument)

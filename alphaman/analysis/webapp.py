@@ -21,6 +21,25 @@
 # SOFTWARE.
 
 from flask import Flask, render_template
+from threading import Thread
+import socket
+import time
+import webbrowser
+
+class OpenBrowser(Thread):
+
+    def __init__(self):
+        super(OpenBrowser, self).__init__()
+
+    def notResponding(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        return sock.connect_ex(('127.0.0.1', 8888))
+
+    def run(self):
+        while self.notResponding():
+            print('Did not respond')
+        print('Responded')
+        webbrowser.open_new('http://127.0.0.1:8888/') 
 
 class WebApp(Flask):
 	
@@ -56,6 +75,12 @@ class WebApp(Flask):
 			instrument_list.append(instrument_dict)
 		return instrument_dict
 		#return map(lambda x: {"instrument":x[0], "bar_data":map(lambda y:y.toDict(), x[1]), "trade_data":map(lambda y:y.toDict(), x[2])}, self.__instrument_datas)
+
+	def execute(self):
+		op = OpenBrowser()
+		op.start()
+		self.run(host='0.0.0.0', port='8888')
+
 
 app = WebApp(__name__)
 
