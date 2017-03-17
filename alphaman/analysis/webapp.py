@@ -52,9 +52,16 @@ class WebApp(Flask):
 			instrument_dict = {}
 			instrument_dict['instrument'] = instrument_data[0]
 
-			instrument_dict['bar_data']   = {'x': map(lambda x: x.toDict()['x'], instrument_data[1]), 'price': map(lambda x: x.toDict()['price'], instrument_data[1])}
+			instrument_dict['bar_data']   = {'x': map(lambda x: x.toDict()['x'], instrument_data[1]),\
+											'price': map(lambda x: x.toDict()['price'], instrument_data[1])}
+			instrument_dict['buy']        = {'x': [x.toDict()['x'] for x in instrument_data[2] if x.toDict().has_key('buy')],\
+											'volume': [x.toDict()['buy']['volume'] for x in instrument_data[2] if x.toDict().has_key('buy')],\
+											'price': [x.toDict()['buy']['price'] for x in instrument_data[2] if x.toDict().has_key('buy')]}
+			instrument_dict['sell']        = {'x': [x.toDict()['x'] for x in instrument_data[2] if x.toDict().has_key('sell')],\
+											'volume': [x.toDict()['sell']['volume'] for x in instrument_data[2] if x.toDict().has_key('sell')],\
+											'price': [x.toDict()['sell']['price'] for x in instrument_data[2] if x.toDict().has_key('sell')]}
 			instrument_list.append(instrument_dict)
-		return instrument_dict
+		return instrument_list
 		#return map(lambda x: {"instrument":x[0], "bar_data":map(lambda y:y.toDict(), x[1]), "trade_data":map(lambda y:y.toDict(), x[2])}, self.__instrument_datas)
 
 app = WebApp(__name__)
@@ -62,4 +69,4 @@ app = WebApp(__name__)
 @app.route("/")
 def show():
 	#return render_template('show2.html', asset=app.getAssetDataDict(), instrument=app.getInstrumentDatas())
-	return render_template('show2.html', asset=app.getAssetDataDict(), instrument=app.getInstrumentDatas())
+	return render_template('show2.html', asset=app.getAssetDataDict(), instruments=app.getInstrumentDatas())

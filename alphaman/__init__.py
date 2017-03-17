@@ -67,10 +67,10 @@ class Alphaman:
 		self.__broker.sell(instrument, volume, limit_price, stop_price, days)
 	
 	def buyCallBack(self, instrument, price, volume):
-		self.__currentRecord().buy(instrument, volume, price)
+		self.__currentRecord().buy(instrument, price, volume)
 
 	def sellCallBack(self, instrument, price, volume):
-		self.__currentRecord().sell(instrument, volume, price)
+		self.__currentRecord().sell(instrument, price, volume)
 
 	def getPriceOfInstrument(self, instrument):
 		return self.__feed.getPriceOfInstrument(instrument, self.__today_idx)
