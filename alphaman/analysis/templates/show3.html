@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+{% block content %}
+<script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
+    <h3 class="display-3 hidden-xs-down">
+    Strategy ""
+    </h3>
+    <p class="lead hidden-xs-down"> </p>
+
+    <div class="row mb-3">
+        <div class="col-xl-3 col-lg-6">
+            <div class="card card-inverse card-success">
+                <div class="card-block bg-success">
+                    <div class="rotate">
+                        <i class="fa fa-user fa-5x"></i>
+                    </div>
+                    <h6 class="text-uppercase">연 수익률</h6>
+                    <h1 class="display-3">7.8%</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+            <div class="card card-inverse card-danger">
+                <div class="card-block bg-danger">
+                    <div class="rotate">
+                        <i class="fa fa-list fa-4x"></i>
+                    </div>
+                    <h6 class="text-uppercase">Alpha (Benchmark "")</h6>
+                    <h1 class="display-3">3.2%</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+            <div class="card card-inverse card-info">
+                <div class="card-block bg-info">
+                    <div class="rotate">
+                        <i class="fa fa-twitter fa-5x"></i>
+                    </div>
+                    <h6 class="text-uppercase">Sharpe Ratio</h6>
+                    <h1 class="display-3">0.512</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+            <div class="card card-inverse card-warning">
+                <div class="card-block bg-warning">
+                    <div class="rotate">
+                        <i class="fa fa-share fa-5x"></i>
+                    </div>
+                    <h6 class="text-uppercase">Beta</h6>
+                    <h1 class="display-3">1.20</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/row-->
+
+    <hr>
+    
+    <h3>Broker Graph</h3>
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div id="asset_graph" style="width:100%"></div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var broker = {{asset|tojson|safe}};
+            var asset = new Object();
+            var cash  = new Object();
+            asset.x = broker.x;
+            asset.y = broker.asset;
+            asset.name = 'Asset';
+            //asset.type = 'scatter';
+            cash.x  = broker.x;
+            cash.y  = broker.cash;
+            cash.name = 'Cash';
+            //cash.type  = 'scatter';
+
+            var layout = {
+                legend: {
+                    x: 0,
+                    y: 1,
+                    bgcolor: '#FFFFFF',
+                    bordercolor: '#000000',
+                    borderwidth: 1
+                }
+            };
+            Plotly.plot('asset_graph', [asset, cash], layout);
+        </script>
+    </div>
+        
+
+    <hr>
+    
+    <h3>Traded Instruments</h3>
+
+    <div class="row">
+    {% for instrument in instruments %}
+    <div class="col-xl-6 col-lg-12">
+        <div class="card">
+            <div id="instrument_graph_{{ loop.index }}" style="width:100%"></div>
+        </div>
+    </div>
+        <script type="text/javascript">
+            var instrument = {{instrument|tojson|safe}};
+            var bar = new Object();
+            var buy = new Object();
+            var sell = new Object();
+            bar.x = instrument.bar_data.x;
+            bar.y = instrument.bar_data.price;
+            bar.name = 'Price';
+            //bar.type = 'scatter';
+            bar.mode = 'lines';
+            buy.x = instrument.buy.x;
+            buy.y = instrument.buy.price;
+            buy.name = 'Buy';
+            //buy.type = 'scatter'
+            buy.mode = 'markers';
+            sell.x = instrument.sell.x;
+            sell.y = instrument.sell.price;
+            sell.name = 'Sell'
+            //sell.type = 'scatter'
+            sell.mode = 'markers';
+
+            var layout = {
+                title: instrument.instrument,
+                legend: {
+                    x: 0,
+                    y: 1,
+                    bgcolor: '#FFFFFF',
+                    bordercolor: '#000000',
+                    borderwidth: 1
+                }
+            };
+            Plotly.plot('instrument_graph_{{ loop.index }}', [bar, buy, sell], layout);
+        </script>
+    {% endfor %}
+    </div>
+
+    <hr>
+{% endblock %}

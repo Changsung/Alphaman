@@ -86,7 +86,7 @@ class WebApp(Flask):
 	def execute(self):
 		op = OpenBrowser()
 		op.start()
-		self.run(host='0.0.0.0', port='8888')
+		self.run(port='8888')
 
 
 app = WebApp(__name__)
@@ -94,4 +94,5 @@ app = WebApp(__name__)
 @app.route("/")
 def show():
 	#return render_template('show2.html', asset=app.getAssetDataDict(), instrument=app.getInstrumentDatas())
-	return render_template('show2.html', asset=app.getAssetDataDict(), instruments=app.getInstrumentDatas())
+	#return render_template('show2.html', asset=app.getAssetDataDict(), instruments=app.getInstrumentDatas())
+	return render_template('show3.html', asset=app.getAssetDataDict(), instruments=app.getInstrumentDatas())
