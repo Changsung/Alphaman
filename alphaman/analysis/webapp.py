@@ -50,16 +50,19 @@ class WebApp(Flask):
 			third item is a list of trade data
 	'''
 	__instrument_datas = []
+	__asset_dict = None
 
 	def setAssetDataList(self, asset_data_list):
 		self.__asset_data_list = asset_data_list
 
 	def getAssetDataDict(self):
-		keys = self.__asset_data_list[0].toDict().keys()
-		asset_dict = {}
-		for key in keys:
-			asset_dict[key] = map(lambda x: x.toDict()[key], self.__asset_data_list)
-		return asset_dict
+		if (self.__asset_dict == None):
+			keys = self.__asset_data_list[0].toDict().keys()
+			asset_dict = {}
+			for key in keys:
+				asset_dict[key] = map(lambda x: x.toDict()[key], self.__asset_data_list)
+			self.__asset_dict = asset_dict
+		return self.__asset_dict
 		#return map(lambda x: x.toDict(), self.__asset_data_list)
 
 	def addInstrumentData(self, instrument, bar_data, trade_data):
