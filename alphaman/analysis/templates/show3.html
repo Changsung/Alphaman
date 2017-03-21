@@ -67,28 +67,38 @@
             var broker = {{asset|tojson|safe}};
             var asset = new Object();
             var cash  = new Object();
+            
             asset.x = broker.x;
             asset.y = broker.asset;
+            asset.fill = 'tonexty';
+            asset.type = 'scatter';
             asset.name = 'Asset';
-            //asset.type = 'scatter';
+            
             cash.x  = broker.x;
             cash.y  = broker.cash;
+            cash.fill = 'tozeroy';
+            cash.type = 'scatter';
             cash.name = 'Cash';
-            //cash.type  = 'scatter';
 
             var layout = {
+                margin: {
+                    l: 40,
+                    r: 20,
+                    t: 40,
+                    b: 40
+                },
                 legend: {
                     x: 0,
                     y: 1,
                     bgcolor: '#FFFFFF',
                     bordercolor: '#000000',
-                    borderwidth: 1
+                    borderwidth: 1,
+                    margin: {l: 10}
                 }
             };
             Plotly.plot('asset_graph', [asset, cash], layout);
         </script>
     </div>
-        
 
     <hr>
     
@@ -96,11 +106,11 @@
 
     <div class="row">
     {% for instrument in instruments %}
-    <div class="col-xl-6 col-lg-12">
-        <div class="card">
-            <div id="instrument_graph_{{ loop.index }}" style="width:100%"></div>
+        <div class="col-xl-6 col-lg-12">
+            <div class="card">
+                <div id="instrument_graph_{{ loop.index }}" style="width:100%"></div>
+            </div>
         </div>
-    </div>
         <script type="text/javascript">
             var instrument = {{instrument|tojson|safe}};
             var bar = new Object();
@@ -111,25 +121,49 @@
             bar.name = 'Price';
             //bar.type = 'scatter';
             bar.mode = 'lines';
+            bar.line = {
+                color: '#000000'
+            }
+
             buy.x = instrument.buy.x;
             buy.y = instrument.buy.price;
             buy.name = 'Buy';
-            //buy.type = 'scatter'
             buy.mode = 'markers';
+            buy.marker = {
+                symbol: 'triangle-up', // triangle up
+                color: '#FF0000',
+                sizemode: 'area',
+                size: instrument.buy.volume
+            };
+            console.log(instrument.buy.volume)
+
             sell.x = instrument.sell.x;
             sell.y = instrument.sell.price;
-            sell.name = 'Sell'
-            //sell.type = 'scatter'
+            sell.name = 'Sell';
             sell.mode = 'markers';
+            sell.marker = {
+                symbol: 'triangle-down', // triangle down
+                color: '#0000FF',
+                sizemode: 'area',
+                size: instrument.sell.volume
+            };
+            
 
             var layout = {
                 title: instrument.instrument,
+                margin: {
+                    l: 40,
+                    r: 20,
+                    t: 40,
+                    b: 40
+                },
                 legend: {
                     x: 0,
                     y: 1,
                     bgcolor: '#FFFFFF',
                     bordercolor: '#000000',
-                    borderwidth: 1
+                    borderwidth: 1,
+                    margin: {l: 10}
                 }
             };
             Plotly.plot('instrument_graph_{{ loop.index }}', [bar, buy, sell], layout);
