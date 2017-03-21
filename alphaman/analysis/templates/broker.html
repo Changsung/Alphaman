@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block content %}
+<script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
+
+	<h3>Broker Graph</h3>
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div id="asset_graph" style="width:100% height:100vh"></div>
+            </div>
+        </div>
+        <script type="text/javascript">
+        	var d3 = Plotly.d3;
+
+        	var gd3 = d3.select('#asset_graph');
+
+        	var gd = gd3.node();
+
+            var broker = {{asset|tojson|safe}};
+            var asset = new Object();
+            var cash  = new Object();
+            
+            asset.x = broker.x;
+            asset.y = broker.asset;
+            asset.fill = 'tonexty';
+            asset.type = 'scatter';
+            asset.name = 'Asset';
+            
+            cash.x  = broker.x;
+            cash.y  = broker.cash;
+            cash.fill = 'tozeroy';
+            cash.type = 'scatter';
+            cash.name = 'Cash';
+
+            var layout = {
+                margin: {
+                    l: 40,
+                    r: 20,
+                    t: 40,
+                    b: 40
+                },
+                legend: {
+                    x: 0,
+                    y: 1,
+                    bgcolor: '#FFFFFF',
+                    bordercolor: '#000000',
+                    borderwidth: 1,
+                    margin: {l: 10}
+                }
+            };
+
+            Plotly.plot(gd, [asset, cash], layout);
+
+            window.onresize = function() {
+            	Plotly.Plots.resize(gd);
+            };
+        </script>
+    </div>
+
+{% endblock %}

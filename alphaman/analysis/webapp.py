@@ -41,6 +41,7 @@ class OpenBrowser(Thread):
         print('Responded')
         webbrowser.open_new('http://127.0.0.1:8888/') 
 
+
 class WebApp(Flask):
 	
 	''' __instrument_datas is a list of tuples which holds instruments data
@@ -96,6 +97,12 @@ app = WebApp(__name__)
 
 @app.route("/")
 def show():
-	#return render_template('show2.html', asset=app.getAssetDataDict(), instrument=app.getInstrumentDatas())
-	#return render_template('show2.html', asset=app.getAssetDataDict(), instruments=app.getInstrumentDatas())
-	return render_template('show3.html', asset=app.getAssetDataDict(), instruments=app.getInstrumentDatas())
+	return render_template('show3.html', asset=app.getAssetDataDict())
+
+@app.route("/graphs/broker/")
+def broker():
+	return render_template('broker.html', asset=app.getAssetDataDict())
+
+@app.route("/graphs/trades/")
+def trades():
+	return render_template('trades.html', instruments=app.getInstrumentDatas())

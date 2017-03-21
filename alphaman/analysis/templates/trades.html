@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+{% block content %}
+<script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
+
+	<h3>Traded Instruments</h3>
+    <div class="row">
+    {% for instrument in instruments %}
+        <div class="col-xl-6 col-lg-12">
+            <div class="card">
+                <div id="instrument_graph_{{ loop.index }}" style="width:100%"></div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var d3 = Plotly.d3;
+            var gd3 = d3.select('#instrument_graph_{{ loop.index }}');
+            var gd = gd3.node();
+
+            var instrument = {{instrument|tojson|safe}};
+            var bar = new Object();
+            var buy = new Object();
+            var sell = new Object();
+            bar.x = instrument.bar_data.x;
+            bar.y = instrument.bar_data.price;
+            bar.name = 'Price';
+            //bar.type = 'scatter';
+            bar.mode = 'lines';
+            bar.line = {
+                color: '#000000'
+            }
+
+            buy.x = instrument.buy.x;
+            buy.y = instrument.buy.price;
+            buy.name = 'Buy';
+            buy.mode = 'markers';
+            buy.marker = {
+                symbol: 'triangle-up', // triangle up
+                color: '#FF0000',
+                sizemode: 'area',
+                size: instrument.buy.volume
+            };
+
+            sell.x = instrument.sell.x;
+            sell.y = instrument.sell.price;
+            sell.name = 'Sell';
+            sell.mode = 'markers';
+            sell.marker = {
+                symbol: 'triangle-down', // triangle down
+                color: '#0000FF',
+                sizemode: 'area',
+                size: instrument.sell.volume
+            };
+            
+
+            var layout = {
+                title: instrument.instrument,
+                margin: {
+                    l: 40,
+                    r: 20,
+                    t: 40,
+                    b: 40
+                },
+                legend: {
+                    x: 0,
+                    y: 1,
+                    bgcolor: '#FFFFFF',
+                    bordercolor: '#000000',
+                    borderwidth: 1,
+                    margin: {l: 10}
+                }
+            };
+            Plotly.plot(gd, [bar, buy, sell], layout);
+
+            window.onresize = function() {
+                Plotly.Plots.resize(gd);
+            };
+        </script>
+    {% endfor %}
+    </div>
+
+{% endblock %}

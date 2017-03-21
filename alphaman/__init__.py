@@ -112,8 +112,8 @@ class Alphaman:
 		record.setCash(self.__broker.getCash() + self.__broker.getScheduleCash())
 		holdings = {}
 		holdingAssets = self.__broker.getHoldingAssets()
-		for item, volme in self.__broker.getHoldings().iteritems():
-			holdings[item] = {"volme":volme, "asset":holdingAssets[item]}
+		for item, volume in self.__broker.getHoldings().iteritems():
+			holdings[item] = {"volume":volume, "asset":holdingAssets[item]}
 		record.setHoldings(holdings)
 
 	def showAsset(self):
