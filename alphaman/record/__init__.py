@@ -37,7 +37,11 @@ class Record:
 		self.__sell = {}
 		self.__asset = 0
 		self.__cash  = 0
-		self.__holdings = None
+		self.__holdings = None  
+		''' 
+		__holdings is dictionary whoose key is instrument and value is also a dictonary which contains volume and asset
+		ex) __holdings = {"000960":{"volume":3, "aset": 109,000}, ...}
+		'''
 
 	def setCash(self, cash):
 		self.__cash = cash

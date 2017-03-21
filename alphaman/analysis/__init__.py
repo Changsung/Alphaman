@@ -60,7 +60,7 @@ class BaseAnalysis:
 	def makeAssetDataList(self, records):
 		result = []
 		for item in records:
-			display_data = DisplayData(item.getDay().strftime("%Y-%m-%d"), [("asset", item.getAsset()), ("cash", item.getCash())])
+			display_data = DisplayData(item.getDay().strftime("%Y-%m-%d"), [("asset", item.getAsset()), ("cash", item.getCash()), ("holdings", item.getHoldings())])
 			result.append(display_data)
 		return result
 
