@@ -37,6 +37,7 @@ class Record:
 		self.__sell = {}
 		self.__asset = 0
 		self.__cash  = 0
+		self.__holdings = None
 
 	def setCash(self, cash):
 		self.__cash = cash
@@ -51,7 +52,7 @@ class Record:
 		return self.__asset
 
 	def setHoldings(self, holdings):
-		self.__holdings = holdings.copy()
+		self.__holdings = holdings
 		
 	def getHoldings(self):
 		return self.__holdings

@@ -142,6 +142,12 @@ class Broker:
 	def getHoldings(self):
 		return self.__holdings
 
+	def getHoldingAssets(self):
+		result = {}
+		for key, volume in self.__holdings.iteritems():
+			result[key] = self.__alphaman.getPriceOfInstrument(key) * volume
+		return result
+
 	def __getInstrumentValue(self, instrument, volume):
 		return self.__alphaman.getPriceOfInstrument(instrument) * volume
 

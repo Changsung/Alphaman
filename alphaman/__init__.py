@@ -103,11 +103,18 @@ class Alphaman:
 			self.__record.append(Record(daily_feed.getCurDate()))
 			#self.__strategy.handleData(feed, today)
 			self.__strategy.handleData()
-			record = self.__currentRecord()
-			record.setAsset(self.__broker.getTotalAsset())
-			record.setCash(self.__broker.getCash() + self.__broker.getScheduleCash())
-			record.setHoldings(self.__broker.getHoldings())
 			self.__broker.operateSchedule()
+			self.__recordData()
+
+	def __recordData(self):
+		record = self.__currentRecord()
+		record.setAsset(self.__broker.getTotalAsset())
+		record.setCash(self.__broker.getCash() + self.__broker.getScheduleCash())
+		holdings = {}
+		holdingAssets = self.__broker.getHoldingAssets()
+		for item, volme in self.__broker.getHoldings().iteritems():
+			holdings[item] = {"volme":volme, "asset":holdingAssets[item]}
+		record.setHoldings(holdings)
 
 	def showAsset(self):
 		for item in self.__record:
