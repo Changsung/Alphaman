@@ -52,6 +52,10 @@ class WebApp(Flask):
 	'''
 	__instrument_datas = []
 	__asset_dict = None
+	__earning_rate = None
+	__beta = None
+	__alpha = None
+	__sharpe_ratio = None
 
 	def setAssetDataList(self, asset_data_list):
 		self.__asset_data_list = asset_data_list
@@ -87,6 +91,15 @@ class WebApp(Flask):
 		return instrument_list
 		#return map(lambda x: {"instrument":x[0], "bar_data":map(lambda y:y.toDict(), x[1]), "trade_data":map(lambda y:y.toDict(), x[2])}, self.__instrument_datas)
 
+	def setIndex(self, earning_rate, beta, alpha, sharpe_ratio):
+		self.__earning_rate = round(earning_rate, 3)
+		self.__beta = round(beta, 3)
+		self.__alpha = round(alpha, 3)
+		self.__sharpe_ratio = round(sharpe_ratio, 3)
+
+	def getIndex(self):
+		return (self.__earning_rate, self.__beta, self.__alpha, self.__sharpe_ratio)
+
 	def execute(self):
 		op = OpenBrowser()
 		op.start()
@@ -97,7 +110,7 @@ app = WebApp(__name__)
 
 @app.route("/")
 def show():
-	return render_template('show3.html', asset=app.getAssetDataDict())
+	return render_template('show3.html', asset=app.getAssetDataDict(), index = app.getIndex())
 
 @app.route("/graphs/broker/")
 def broker():

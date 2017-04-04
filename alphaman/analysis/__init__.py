@@ -104,7 +104,13 @@ class BaseAnalysis:
 			'''
 		return result
 
-
+	def getReturnRate(self, records):
+		assetDelta 	= records[-1].getAsset() - records[0].getAsset()
+		dayDelta	= records[-1].getDay() - records[0].getDay()
+		num_years = int(dayDelta.days / 365.25)
+		earning_rate = (assetDelta * 100.000) / float(records[0].getAsset()) 
+		year_earning_rate = earning_rate ** (1/float(num_years))
+		return year_earning_rate
 
 	def plot(self, records):
 		# x = map(lambda x: x.getDay(), records)
@@ -119,7 +125,10 @@ class BaseAnalysis:
 		for instrument in top_instruments:
 		 	self.__app.addInstrumentData(instrument, self.makeBarDataList(instrument), self.makeTradeDataList(instrument, records))
 		# make asset data
+		earning_rate = self.getReturnRate(records)
+
 		assetDataList = self.makeAssetDataList(records)
+		self.__app.setIndex(earning_rate, 1.3, 2.321, 1.441)
 		self.__app.setAssetDataList(assetDataList)
 		self.__app.execute()
 
