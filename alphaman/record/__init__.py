@@ -39,7 +39,7 @@ class Record:
 		self.__cash  = 0
 		self.__holdings = None  
 		''' 
-		__holdings is dictionary whoose key is instrument and value is also a dictonary which contains volume and asset
+		__holdings is a dictionary whoose key is instrument string and value is a dictonary which contains volume and asset
 		ex) __holdings = {"000960":{"volume":3, "aset": 109,000}, ...}
 		'''
 
