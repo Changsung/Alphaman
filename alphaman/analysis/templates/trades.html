@@ -29,26 +29,30 @@
             }
 
             buy.x = instrument.buy.x;
-            buy.y = instrument.buy.price;
+            buy.y = instrument.buy.volume;
             buy.name = 'Buy';
-            buy.mode = 'markers';
+            buy.type = 'bar';
+            buy.yaxis = 'y2';
+            /*buy.mode = 'markers';
             buy.marker = {
                 symbol: 'triangle-up', // triangle up
                 color: '#FF0000',
                 sizemode: 'area',
                 size: 10
-            };
+            };*/
 
             sell.x = instrument.sell.x;
-            sell.y = instrument.sell.price;
+            sell.y = instrument.sell.volume;
             sell.name = 'Sell';
-            sell.mode = 'markers';
+            sell.type = 'bar';
+            sell.yaxis = 'y2';
+            /*sell.mode = 'markers';
             sell.marker = {
                 symbol: 'triangle-down', // triangle down
                 color: '#0000FF',
                 sizemode: 'area',
                 size: 10
-            };
+            };*/
             
 
             var layout = {
@@ -66,6 +70,12 @@
                     bordercolor: '#000000',
                     borderwidth: 1,
                     margin: {l: 10}
+                },
+                yaxis: {title: 'Price'},
+                yaxis2: {
+                    title: 'Volume',
+                    overlaying: 'y',
+                    side: 'right'
                 }
             };
             Plotly.plot(gd, [bar, buy, sell], layout);
