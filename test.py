@@ -13,19 +13,17 @@ class MyStrategy(BaseStrategy):
 
 	def handleData(self):
 		#daily_feed = feed.getDailyFeed(today)
-		sma = self.get(self.__instrument, tech_key('Close', 60, 'sma'), daily(-2, 0))
-		stddev = self.get(self.__instrument, tech_key('Close', 60, 'stddev'), weekly(-2, 0))
-		today_price = self.get(self.__instrument, 'Close', 0)
-		yesterday_price = self.get(self.__instrument, 'Close', -1)
-		if today_price < 35000:
-			self.orderTarget(self.__instrument, 0.8)
-		else:
+		sma1 = self.get(self.__instrument, tech_key('Close', 20, 'sma'), daily(-2, 0))
+		sma2 = self.get(self.__instrument, tech_key('Close', 60, 'sma'), daily(-2, 0))
+		if (sma1[0] > sma2[0]) and (sma1[-1] < sma2[-1]):
+			self.orderTarget(self.__instrument, 0.7)
+		elif (sma1[0] < sma2[0]) and (sma1[-1] > sma2[-1]):
 			self.orderTarget(self.__instrument, 0.2)
 
 start_date 	= datetime.datetime(2006,1,1)
 end_date	= datetime.datetime(2016,12,31)
 
-instrument = "000660"
+instrument = "007700"
 
 df = web.DataReader(instrument+".KS", "yahoo", start_date, end_date)
 
@@ -36,18 +34,10 @@ feed.addDailyFeed(df, instrument)
 # sma
 tech = Technical(feed)
 feed.addTechnicalData(tech.sma(instrument, 'Close', 60), instrument)
-feed.addTechnicalData(tech.stddev(instrument, 'Close', 60), instrument)
+feed.addTechnicalData(tech.sma(instrument, 'Close', 20), instrument)
 
 alphaman = Alphaman(start_date, end_date)
 alphaman.setFeed(feed)
-#alphaman.setShortSelling(True)
 alphaman.setStrategy(MyStrategy(instrument))
 alphaman.run()
-#alphaman.showAsset()
 alphaman.show()
-
-# print dates
-# daily_feed = feed.getDailyFeed(0)
-# daily_instrument_data = daily_feed.getDailyInstrumentData(instrument)
-#
-# print daily_instrument_data.getBarData()
