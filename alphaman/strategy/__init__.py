@@ -24,8 +24,17 @@ class BaseStrategy:
 	''' class for strategy. 
 		write an algorithm in this class'''
 
+	__signals = {}
+
 	def __init__(self):
 		pass
+
+	def addSignals(self, key, signal):
+		self.__signals[key] = signal
+		signal.setStrategy(self)
+
+	def getSignal(self, key):
+		return self.__signals[key].getSignal()
 
 	def handleData(self):
 		raise NotImplementedError()
@@ -75,3 +84,4 @@ class BaseStrategy:
 			return data_list
 		else:
 			raise Exception('date_idx must be int or list of int')
+	

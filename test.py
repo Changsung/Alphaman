@@ -6,18 +6,19 @@ from alphaman.strategy import BaseStrategy
 from alphaman import Alphaman
 from alphaman.technical import Technical
 from alphaman.utils import daily, weekly, tech_key
+from alphaman.signal import BuySignal
+from alphaman.signal.CrossSignal import CrossSignal
 
 class MyStrategy(BaseStrategy):
 	def __init__(self, instrument):
 		self.__instrument = instrument
+		self.addSignals("cross", CrossSignal(instrument))
 
 	def handleData(self):
-		#daily_feed = feed.getDailyFeed(today)
-		sma1 = self.get(self.__instrument, tech_key('Close', 20, 'sma'), daily(-2, 0))
-		sma2 = self.get(self.__instrument, tech_key('Close', 60, 'sma'), daily(-2, 0))
-		if (sma1[0] > sma2[0]) and (sma1[-1] < sma2[-1]):
+		crossSignal = self.getSignal("cross")
+		if crossSignal == BuySignal.Long:
 			self.orderTarget(self.__instrument, 0.7)
-		elif (sma1[0] < sma2[0]) and (sma1[-1] > sma2[-1]):
+		elif crossSignal == BuySignal.Short:
 			self.orderTarget(self.__instrument, 0.2)
 
 start_date 	= datetime.datetime(2006,1,1)
