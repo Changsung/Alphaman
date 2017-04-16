@@ -101,7 +101,6 @@ class Alphaman:
 			self.__today_idx = today
 			daily_feed = feed.getDailyFeed(today)
 			self.__record.append(Record(daily_feed.getCurDate()))
-			#self.__strategy.handleData(feed, today)
 			self.__strategy.handleData()
 			self.__broker.operateSchedule()
 			self.__recordData()
